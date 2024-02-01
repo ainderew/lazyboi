@@ -19,7 +19,7 @@ async function clickElementByText() {
     await page.setViewport({
       width: 2400,
       height: 800,
-    })
+    });
 
     await page.goto("https://theoriamedical.hrhub.ph/EmployeeDashboard.aspx");
 
@@ -53,16 +53,34 @@ async function clickElementByText() {
     console.log(err);
   }
 }
+
 console.log("running");
 cron.schedule("* * * * *", () => {
   console.log("testing every minute pings");
   let now = new Date();
   console.log(now);
 });
+
 cron.schedule(
-  "32 3 * * *",
+  "0 7 * * *",
   () => {
     console.log("waiting for 10:45");
+    const randomNum = Math.floor(Math.random() * (40 - 1 + 1)) + 1;
+    setTimeout(clickElementByText, randomNum);
+    clickElementByText();
+  },
+  {
+    scheduled: true,
+    timezone: "Asia/Manila",
+  }
+);
+
+cron.schedule(
+  "0 22 * * *",
+  () => {
+    console.log("waiting for 10:45");
+    const randomNum = Math.floor(Math.random() * (40 - 1 + 1)) + 1;
+    setTimeout(clickElementByText, randomNum);
     clickElementByText();
   },
   {
