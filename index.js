@@ -7,7 +7,13 @@ async function clickElementByText() {
   console.log("Running Clock In Script");
 
   try {
-    const browser = await puppeteer.launch({ headless: "new", });
+    const browser = await puppeteer.launch({
+      headless: "new",
+      executablePath:
+        process.eng.NODE_ENV === "production"
+          ? process.env.PUPPETEER_EXECUTABLE_PATH
+          : puppeteer.executablePath(),
+    });
 
     const page = await browser.newPage();
     // await page.setUserAgent(
@@ -57,11 +63,14 @@ cron.schedule("* * * * *", () => {
   let now = new Date();
   console.log(now);
 });
-cron.schedule("03 1 * * *", () => {
-  console.log("waiting for 10:45");
-  clickElementByText();
-}, 
-{
-  scheduled: true,
-  timezone: "Asia/Manila"
-});
+cron.schedule(
+  "10 1 * * *",
+  () => {
+    console.log("waiting for 10:45");
+    clickElementByText();
+  },
+  {
+    scheduled: true,
+    timezone: "Asia/Manila",
+  }
+);
