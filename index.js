@@ -57,7 +57,7 @@ cron.schedule("* * * * *", () => {
   let now = new Date();
   console.log(now);
 });
-cron.schedule("45 23 * * *", () => {
+cron.schedule("30 0 * * *", () => {
   console.log("waiting for 10:45");
   clickElementByText();
 }, 
