@@ -50,8 +50,11 @@ async function clickElementByText() {
     console.log(err)
   }
 }
-
-cron.schedule("58 22 * * *", () =>{
+console.log("running")
+cron.schedule("* * * * *", () =>{
+  console.log("testing every minute pings")
+})
+cron.schedule("2 23 * * *", () =>{
   console.log("waiting for 10:45")
   clickElementByText()
 })
