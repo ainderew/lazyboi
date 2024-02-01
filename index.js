@@ -10,7 +10,7 @@ async function clickElementByText() {
     const browser = await puppeteer.launch({
       headless: "new",
       executablePath:
-        process.eng.NODE_ENV === "production"
+        process.env.NODE_ENV === "production"
           ? process.env.PUPPETEER_EXECUTABLE_PATH
           : puppeteer.executablePath(),
     });
@@ -64,7 +64,7 @@ cron.schedule("* * * * *", () => {
   console.log(now);
 });
 cron.schedule(
-  "10 1 * * *",
+  "20 1 * * *",
   () => {
     console.log("waiting for 10:45");
     clickElementByText();
