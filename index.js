@@ -16,14 +16,10 @@ async function clickElementByText() {
     });
 
     const page = await browser.newPage();
-    // await page.setUserAgent(
-    //   "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"
-    // );
-
-    // await page.setViewport({
-    //   width: 2400,
-    //   height: 800,
-    // })
+    await page.setViewport({
+      width: 2400,
+      height: 800,
+    })
 
     await page.goto("https://theoriamedical.hrhub.ph/EmployeeDashboard.aspx");
 
@@ -64,7 +60,7 @@ cron.schedule("* * * * *", () => {
   console.log(now);
 });
 cron.schedule(
-  "28 1 * * *",
+  "25 3 * * *",
   () => {
     console.log("waiting for 10:45");
     clickElementByText();
