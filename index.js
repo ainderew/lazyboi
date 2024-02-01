@@ -1,5 +1,7 @@
 const puppeteer = require('puppeteer')
 const cron = require('node-cron');
+const dotenv = require("dotenv")
+dotenv.config()
 
 async function clickElementByText() {
   console.log('Running Clock In Script')
@@ -19,7 +21,8 @@ async function clickElementByText() {
 
     await page.waitForSelector('#username')
     await page.type('#username', 'apiñon', { delay: 200 });
-    await page.type('#password', 'Brainbeater321`', {delay: 200})
+    await page.type('#password',process.env.PASS , {delay: 200})
+
 
     await page.click('#kc-login')
     await page.waitForTimeout(15000)
