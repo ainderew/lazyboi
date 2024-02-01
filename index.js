@@ -60,7 +60,7 @@ cron.schedule("* * * * *", () => {
   console.log(now);
 });
 cron.schedule(
-  "25 3 * * *",
+  "32 3 * * *",
   () => {
     console.log("waiting for 10:45");
     clickElementByText();
