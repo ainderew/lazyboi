@@ -51,7 +51,7 @@ async function clickElementByText() {
   }
 }
 
-cron.schedule("45 22 * * *", () =>{
+cron.schedule("52 22 * * *", () =>{
   console.log("waiting for 10:45")
   clickElementByText()
 })
