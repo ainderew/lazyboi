@@ -4,6 +4,7 @@ const cron = require("node-cron");
 const { clickElementByText } = require("./login");
 
 app.get("/", function (req, res) {
+  console.log("SOMEONE PINGED ME")
   res.send({Status: 200})
 });
 
@@ -18,7 +19,7 @@ app.get("/startCron", function (req, res) {
   });
 
   cron.schedule(
-    "0 7 * * *",
+    "0 7 * * 1-5",
     () => {
       console.log("LOGOUT");
       const randomNum = Math.floor(Math.random() * (40 - 1 + 1)) + 1;
@@ -32,7 +33,7 @@ app.get("/startCron", function (req, res) {
   );
 
   cron.schedule(
-    "0 22 * * *",
+    "0 22 * * 1-5",
     () => {
       console.log("LOGIN");
       const randomNum = Math.floor(Math.random() * (40 - 1 + 1)) + 1;
