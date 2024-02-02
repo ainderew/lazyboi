@@ -3,7 +3,7 @@ const puppeteer = require("puppeteer");
 const dotenv = require("dotenv");
 dotenv.config();
 
-export async function clickElementByText() {
+async function clickElementByText() {
   console.log("Running Clock In Script");
 
   try {
@@ -55,3 +55,4 @@ export async function clickElementByText() {
 }
 
 
+module.exports = clickElementByText
