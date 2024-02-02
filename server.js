@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const cron = require("node-cron");
-const { clickElementByText } = require("./login");
+const  clickElementByText = require("./login");
 
 app.get("/", function (req, res) {
   console.log("SOMEONE PINGED ME")
@@ -22,10 +22,10 @@ app.get("/startCron", function (req, res) {
     "0 7 * * 2-6",
     () => {
       console.log("LOGOUT");
-      const randomNum = Math.floor(Math.random() * (40 - 1 + 1)) + 1;
+      const randomNum = Math.floor(Math.random() * (30 - 1 + 1)) + 1;
       console.log("Delayed by" + randomNum)
-      setTimeout(clickElementByText, randomNum);
-      clickElementByText();
+      setTimeout(clickElementByText, randomNum * 1000 * 60);
+      // clickElementByText();
     },
     {
       scheduled: true,
@@ -34,13 +34,13 @@ app.get("/startCron", function (req, res) {
   );
 
   cron.schedule(
-    "53 22 * * 1-5",
+    "0 22 * * 1-5",
     () => {
       console.log("LOGIN");
-      const randomNum = Math.floor(Math.random() * (3 - 1 + 1)) + 1;
+      const randomNum = Math.floor(Math.random() * (30 - 1 + 1)) + 1;
       console.log("Delayed by" + randomNum)
-      setTimeout(clickElementByText, randomNum);
-      clickElementByText();
+      setTimeout(clickElementByText, randomNum * 1000 *60);
+      // clickElementByText();
     },
     {
       scheduled: true,
