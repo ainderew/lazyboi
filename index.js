@@ -1,9 +1,9 @@
 const puppeteer = require("puppeteer");
-const cron = require("node-cron");
+
 const dotenv = require("dotenv");
 dotenv.config();
 
-async function clickElementByText() {
+export async function clickElementByText() {
   console.log("Running Clock In Script");
 
   try {
@@ -54,37 +54,4 @@ async function clickElementByText() {
   }
 }
 
-console.log("running");
-cron.schedule("* * * * *", () => {
-  console.log("testing every minute pings");
-  let now = new Date();
-  console.log(now);
-});
 
-cron.schedule(
-  "0 7 * * *",
-  () => {
-    console.log("waiting for 10:45");
-    const randomNum = Math.floor(Math.random() * (40 - 1 + 1)) + 1;
-    setTimeout(clickElementByText, randomNum);
-    clickElementByText();
-  },
-  {
-    scheduled: true,
-    timezone: "Asia/Manila",
-  }
-);
-
-cron.schedule(
-  "0 22 * * *",
-  () => {
-    console.log("waiting for 10:45");
-    const randomNum = Math.floor(Math.random() * (40 - 1 + 1)) + 1;
-    setTimeout(clickElementByText, randomNum);
-    clickElementByText();
-  },
-  {
-    scheduled: true,
-    timezone: "Asia/Manila",
-  }
-);
