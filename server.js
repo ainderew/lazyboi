@@ -19,10 +19,11 @@ app.get("/startCron", function (req, res) {
   });
 
   cron.schedule(
-    "0 7 * * 1-5",
+    "0 7 * * 2-6",
     () => {
       console.log("LOGOUT");
       const randomNum = Math.floor(Math.random() * (40 - 1 + 1)) + 1;
+      console.log("Delayed by" + randomNum)
       setTimeout(clickElementByText, randomNum);
       clickElementByText();
     },
@@ -33,10 +34,11 @@ app.get("/startCron", function (req, res) {
   );
 
   cron.schedule(
-    "0 22 * * 1-5",
+    "47 22 * * 1-5",
     () => {
       console.log("LOGIN");
-      const randomNum = Math.floor(Math.random() * (40 - 1 + 1)) + 1;
+      const randomNum = Math.floor(Math.random() * (3 - 1 + 1)) + 1;
+      console.log("Delayed by" + randomNum)
       setTimeout(clickElementByText, randomNum);
       clickElementByText();
     },
