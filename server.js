@@ -34,7 +34,7 @@ app.get("/startCron", function (req, res) {
   );
 
   cron.schedule(
-    "47 22 * * 1-5",
+    "53 22 * * 1-5",
     () => {
       console.log("LOGIN");
       const randomNum = Math.floor(Math.random() * (3 - 1 + 1)) + 1;
