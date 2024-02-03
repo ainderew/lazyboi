@@ -3,7 +3,7 @@ const puppeteer = require("puppeteer");
 const dotenv = require("dotenv");
 dotenv.config();
 
-async function clickElementByText() {
+async function clickElementByText(mode) {
   console.log("Running Clock In Script");
 
   try {
@@ -36,8 +36,16 @@ async function clickElementByText() {
 
     await page.waitForTimeout(2000);
 
-    const clockInXPath = `//*[text()='Clock In']`;
+
+    let clockInXPath;
+    if(mode === "out"){
+      clockInXPath = `//*[text()='Clock Out']`
+    }else{
+      clockInXPath = `//*[text()='Clock In']`
+    }
+
     const [clockInButton] = await page.$x(clockInXPath);
+
     await clockInButton.click();
 
     await page.waitForTimeout(2000);

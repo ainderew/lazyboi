@@ -24,7 +24,7 @@ app.get("/startCron", function (req, res) {
       console.log("LOGOUT");
       const randomNum = Math.floor(Math.random() * (30 - 1 + 1)) + 1;
       console.log("Delayed by" + randomNum)
-      setTimeout(clickElementByText, randomNum * 1000 * 60);
+      setTimeout(() => clickElementByText("out"), randomNum * 1000 * 60);
       // clickElementByText();
     },
     {
@@ -39,7 +39,7 @@ app.get("/startCron", function (req, res) {
       console.log("LOGIN");
       const randomNum = Math.floor(Math.random() * (30 - 1 + 1)) + 1;
       console.log("Delayed by" + randomNum)
-      setTimeout(clickElementByText, randomNum * 1000 *60);
+      setTimeout(() => clickElementByText("in"), randomNum * 1000 *60);
       // clickElementByText();
     },
     {
