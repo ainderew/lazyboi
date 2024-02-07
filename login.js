@@ -3,7 +3,7 @@ const puppeteer = require("puppeteer");
 const dotenv = require("dotenv");
 dotenv.config();
 
-async function clickElementByText(mode) {
+async function automateSprout(mode) {
   console.log("Running Clock In Script");
 
   try {
@@ -63,4 +63,4 @@ async function clickElementByText(mode) {
 }
 
 
-module.exports = clickElementByText
+module.exports = automateSprout
