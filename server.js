@@ -11,13 +11,7 @@ app.get("/", function (req, res) {
 
 app.get("/startCron", function (req, res) {
   res.send("CRON PAGE");
-
   console.log("running");
-  cron.schedule("* * * * *", () => {
-    console.log("testing every minute pings");
-    let now = new Date();
-    console.log(now);
-  });
 
   cron.schedule(
     "0 7 * * 2-6",

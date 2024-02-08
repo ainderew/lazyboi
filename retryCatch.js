@@ -1,4 +1,4 @@
-async function retryCatch(callback, retries, loginMode) {
+async function retryCatch(callback, loginMode, retries) {
   try {
     return await callback(loginMode);
   } catch (error) {
