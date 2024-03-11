@@ -59,6 +59,7 @@ async function automateSprout(mode) {
   } catch (err) {
     console.log("Something went wrong");
     console.log(err);
+    throw new Error(err);
   }
 }
 
