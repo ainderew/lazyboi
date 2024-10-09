@@ -9,6 +9,7 @@ async function automateSprout(mode) {
   try {
     const browser = await puppeteer.launch({
       headless: "false",
+      args: ['--no-sandbox'],
       executablePath:
         process.env.NODE_ENV === "production"
           ? process.env.PUPPETEER_EXECUTABLE_PATH
@@ -38,9 +39,9 @@ async function automateSprout(mode) {
 
 
     let clockInXPath;
-    if(mode === "out"){
+    if (mode === "out") {
       clockInXPath = `//*[text()='Clock Out']`
-    }else{
+    } else {
       clockInXPath = `//*[text()='Clock In']`
     }
 
