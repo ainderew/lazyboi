@@ -44,8 +44,9 @@ app.get("/startCron", function(req, res) {
   );
 });
 
-app.get("/test-login", function(req, res) {
-  automateSprout("in")
+app.get("/test-login", async function(req, res) {
+  await automateSprout("in")
+
   res.send("TEST LOGIN")
 })
 
