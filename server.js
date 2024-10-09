@@ -4,12 +4,12 @@ const cron = require("node-cron");
 const automateSprout = require("./login");
 const retryCatch = require("./retryCatch");
 
-app.get("/", function (req, res) {
+app.get("/", function(req, res) {
   console.log("SOMEONE PINGED ME");
   res.send({ Status: 200 });
 });
 
-app.get("/startCron", function (req, res) {
+app.get("/startCron", function(req, res) {
   res.send("CRON PAGE");
   console.log("running");
 
@@ -44,6 +44,6 @@ app.get("/startCron", function (req, res) {
   );
 });
 
-app.listen(3000, () => {
-  console.log("Server Running PORT: 3000");
+app.listen(4200, () => {
+  console.log("Server Running PORT: 4200");
 });
