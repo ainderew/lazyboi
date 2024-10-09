@@ -44,6 +44,11 @@ app.get("/startCron", function(req, res) {
   );
 });
 
+app.get("/test-login", function(req, res) {
+  automateSprout("in")
+  res.send("TEST LOGIN")
+})
+
 app.listen(4200, () => {
   console.log("Server Running PORT: 4200");
 });
