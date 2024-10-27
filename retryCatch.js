@@ -1,3 +1,5 @@
+const RecordKeeping = require("./service/RecordKeeping.service");
+
 async function retryCatch(callback, loginMode, retries) {
   try {
     return await callback(loginMode);
@@ -7,6 +9,8 @@ async function retryCatch(callback, loginMode, retries) {
       console.log(`RETRYING: retries left - ${retries}`)
       return await retryCatch(callback, loginMode, retries - 1);
     } else {
+      const rk = new RecordKeeping(loginMode)
+      rk.writeFailedAttempt()
       return error;
     }
   }

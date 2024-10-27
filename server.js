@@ -3,6 +3,8 @@ const app = express();
 const cron = require("node-cron");
 const automateSprout = require("./login");
 const retryCatch = require("./retryCatch");
+const db = require("./db/initDB");
+const RecordKeeping = require("./service/RecordKeeping.service");
 
 app.get("/", function(req, res) {
   console.log("SOMEONE PINGED ME");
@@ -46,6 +48,9 @@ app.get("/startCron", function(req, res) {
 
 app.get("/test-login", async function(req, res) {
   await automateSprout("in")
+
+  const rk = new RecordKeeping("test_in")
+  rk.writeRecord()
 
   res.send("TEST LOGIN ROUTE")
 })

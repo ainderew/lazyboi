@@ -1,6 +1,8 @@
 const puppeteer = require("puppeteer");
+const RecordKeeping = require("./service/RecordKeeping.service");
 
 const dotenv = require("dotenv");
+const LOGIN_MODE = require("./enums");
 dotenv.config();
 
 async function automateSprout(mode) {
@@ -39,7 +41,7 @@ async function automateSprout(mode) {
 
 
     let clockInXPath;
-    if (mode === "out") {
+    if (mode === LOGIN_MODE.out) {
       clockInXPath = `//*[text()='Clock Out']`
     } else {
       clockInXPath = `//*[text()='Clock In']`
@@ -56,6 +58,10 @@ async function automateSprout(mode) {
     await page.waitForTimeout(10000);
 
     await browser.close();
+
+    const rk = new RecordKeeping(mode)
+    rk.writeRecord()
+
     console.log("Done Clock In!");
   } catch (err) {
     console.log("Something went wrong");
