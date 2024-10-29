@@ -1,6 +1,8 @@
 const testH1 = document.querySelector(".log-container")
 
-fetch('http://localhost:4200/test-get-records')
+const API_ENDPOINT = "http://128.199.145.173:4200/"
+
+fetch(`${API_ENDPOINT}/get-records`)
   .then(res => res.json())
   .then(data => displayRecords(data))
   .catch(err => console.log(err))

@@ -70,7 +70,7 @@ app.get("/test-logout", async function(req, res) {
   res.send("TEST LOGOUT ROUTE")
 })
 
-app.get("/test-get-records", checkRecord)
+app.get("/get-records", checkRecord)
 
 app.listen(4200, () => {
   console.log("Server Running PORT: 4200");
