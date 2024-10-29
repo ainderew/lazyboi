@@ -12,6 +12,12 @@ fetch(`${API_ENDPOINT}/get-records`)
   .then(data => displayRecords(data))
   .catch(err => console.log(err))
 
+fetch(`${API_ENDPOINT}/check-cron-status`)
+  .then(res => res.json())
+  .then(data => displayCronStatus(data))
+  .catch(err => console.log(err))
+
+
 
 function displayRecords(timelogs) {
   console.log(timelogs)
@@ -25,4 +31,18 @@ function displayRecords(timelogs) {
    <span class="value-text ${el.status === "success" ? "success-text" : "fail-text"}">${el.status}</span>
   </div>
 </div> `).join("")
+}
+
+
+function displayCronStatus(data) {
+  const indicator = document.querySelector(".cron-status-indicator")
+  const statusText = document.querySelector(".cron-status-text")
+  console.log(data)
+
+  const { isAutomatedLogsActive } = data
+  isAutomatedLogsActive
+    ? indicator.innerHTML = `<img class="indicator-img" src="./assets/check.svg" alt="check mark">`
+    : indicator.innerHTML = `<img class="indicator-img" src="./assets/warning.svg" alt="check mark">`
+  isAutomatedLogsActive ? statusText.innerText = "Running" : "Not Active"
+  isAutomatedLogsActive && indicator.classList.add("active")
 }

@@ -1,9 +1,7 @@
-
-const dotenv = require("dotenv")
-dotenv.config()
-
-export const config = {
-  API_ENDPOINT: process.env.API_ENDPOINT || "http://localhost:4200"
+const config = {
+  IS_CRON_JOB_ACTIVE: false
 }
+
+module.exports = config
 
 
