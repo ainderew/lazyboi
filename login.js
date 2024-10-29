@@ -3,6 +3,7 @@ const RecordKeeping = require("./service/RecordKeeping.service");
 
 const dotenv = require("dotenv");
 const { LOGIN_MODE } = require("./enums");
+const logger = require("./utils/logger");
 dotenv.config();
 
 async function automateSprout(mode) {
@@ -35,6 +36,11 @@ async function automateSprout(mode) {
 
     const clockInOrOutXPath = `//*[text()='Clock In/Out']`;
     const [clockInOrOutButton] = await page.$x(clockInOrOutXPath);
+
+    if (!clockInOrOutButton) {
+      throw new Error("Button does not exist")
+    }
+
     await clockInOrOutButton.click();
 
     await page.waitForTimeout(2000);
@@ -48,6 +54,10 @@ async function automateSprout(mode) {
     }
 
     const [clockInButton] = await page.$x(clockInXPath);
+
+    if (!clockInButton) {
+      throw new Error("Clock in button does not exist")
+    }
 
     await clockInButton.click();
 
@@ -64,9 +74,7 @@ async function automateSprout(mode) {
 
     console.log("Done Clock In!");
   } catch (err) {
-    console.log("Something went wrong");
-    console.log(err);
-    throw new Error(err);
+    throw err
   }
 }
 

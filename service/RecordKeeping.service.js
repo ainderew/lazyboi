@@ -1,4 +1,5 @@
-const db = require("../db/initDB")
+const db = require("../db/initDB");
+const logger = require("../utils/logger");
 
 class RecordKeeping {
   #DATE_OPTION;
@@ -21,7 +22,7 @@ class RecordKeeping {
     const philippineDateTime = date.toLocaleString('en-PH', this.#DATE_OPTION);
 
     db.run(`INSERT INTO timekeeping(dateTime, type, status) VALUES(?, ?, ?)`, [philippineDateTime, mode, "success"], function(err) {
-      if (err) { console.error("WRITE RECORDS ERROR") }
+      if (err) { logger.error("WRITE RECORDS ERROR") }
       console.log("WRITE RECORD SUCCESS")
     })
   }

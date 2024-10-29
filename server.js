@@ -9,6 +9,7 @@ const db = require("./db/initDB");
 const RecordKeeping = require("./service/RecordKeeping.service");
 const { LOGIN_MODE } = require("./enums");
 const checkRecord = require("./routes/CheckRecords.route");
+const logger = require("./utils/logger");
 
 app.use("/boom", express.static(path.join(__dirname, 'public')));
 
@@ -53,20 +54,13 @@ app.get("/startCron", function(req, res) {
 });
 
 app.get("/test-login", async function(req, res) {
-  await automateSprout(LOGIN_MODE.in)
-
-  const rk = new RecordKeeping()
-  rk.writeRecord("test_in")
-
+  logger.info("TEST LOGIN")
+  await retryCatch(automateSprout, "in", 10)
   res.send("TEST LOGIN ROUTE")
 })
 
 app.get("/test-logout", async function(req, res) {
   await automateSprout(LOGIN_MODE.out)
-
-  const rk = new RecordKeeping()
-  rk.writeRecord("test_in")
-
   res.send("TEST LOGOUT ROUTE")
 })
 
