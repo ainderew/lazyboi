@@ -1,8 +1,11 @@
 const testH1 = document.querySelector(".log-container")
 
-const API_ENDPOINT = "http://128.199.145.173:4200"
+const isProd = true;
+const API_ENDPOINT =
+  isProd
+    ? "http://128.199.145.173:4200"
+    : "http://localhost:4200"
 // reminder comment proper
-// const API_ENDPOINT = "http://localhost:4200"
 
 fetch(`${API_ENDPOINT}/get-records`)
   .then(res => res.json())
