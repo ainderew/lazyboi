@@ -1,6 +1,3 @@
-const dotenv = require("dotenv");
-dotenv.config();
-
 const testH1 = document.querySelector(".log-container")
 
 const API_ENDPOINT = process.env.API_ENDPOINT
