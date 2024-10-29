@@ -3,4 +3,12 @@ const LOGIN_MODE = {
   out: "out"
 }
 
-module.exports = LOGIN_MODE
+const test = {
+  test: "Hmm"
+}
+
+
+module.exports = {
+  LOGIN_MODE,
+  test
+}

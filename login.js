@@ -2,7 +2,7 @@ const puppeteer = require("puppeteer");
 const RecordKeeping = require("./service/RecordKeeping.service");
 
 const dotenv = require("dotenv");
-const LOGIN_MODE = require("./enums");
+const { LOGIN_MODE } = require("./enums");
 dotenv.config();
 
 async function automateSprout(mode) {
@@ -59,8 +59,8 @@ async function automateSprout(mode) {
 
     await browser.close();
 
-    const rk = new RecordKeeping(mode)
-    rk.writeRecord()
+    const rk = new RecordKeeping()
+    rk.writeRecord(mode)
 
     console.log("Done Clock In!");
   } catch (err) {

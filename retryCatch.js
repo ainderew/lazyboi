@@ -9,8 +9,8 @@ async function retryCatch(callback, loginMode, retries) {
       console.log(`RETRYING: retries left - ${retries}`)
       return await retryCatch(callback, loginMode, retries - 1);
     } else {
-      const rk = new RecordKeeping(loginMode)
-      rk.writeFailedAttempt()
+      const rk = new RecordKeeping()
+      rk.writeFailedAttempt(loginMode)
       return error;
     }
   }
