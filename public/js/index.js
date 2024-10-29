@@ -1,6 +1,6 @@
 const testH1 = document.querySelector(".log-container")
 
-const API_ENDPOINT = process.env.API_ENDPOINT
+const API_ENDPOINT = "http://128.199.145.173:4200"
 // reminder comment proper
 // const API_ENDPOINT = "http://localhost:4200"
 
