@@ -25,7 +25,7 @@ function startCron(_, res) {
   );
 
   cron.schedule(
-    "0 21 * * 1-5",
+    "0 20 * * 1-5",
     () => {
       const randomNum = Math.floor(Math.random() * (30 - 1 + 1)) + 1;
 
