@@ -16,5 +16,8 @@
     "puppeteer": "^21.10.0",
     "sqlite3": "^5.1.7",
     "winston": "^3.15.0"
+  },
+  "devDependencies": {
+    "prettier": "3.5.3"
   }
 }

@@ -12,7 +12,9 @@ const logger = createLogger({
 
   transports: [
     new transports.File({
-      filename: 'logs/combined.log', level: 'info', eol: '\n\n',
+      filename: 'logs/combined.log',
+      level: 'info',
+      eol: '\n\n',
     }),
     new transports.File({
       filename: 'logs/error.log',
@@ -21,15 +23,14 @@ const logger = createLogger({
       maxsize: 5000000,
       maxFiles: 4,
     }),
-
-  ]
+  ],
 });
 
 logger.exceptions.handle(
   new transports.File({
-    filename: 'logs/exceptions.log', eol: '\n\n',
-  })
+    filename: 'logs/exceptions.log',
+    eol: '\n\n',
+  }),
 );
 
-
-module.exports = logger
+module.exports = logger;

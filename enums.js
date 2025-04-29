@@ -1,14 +1,13 @@
 const LOGIN_MODE = {
-  in: "in",
-  out: "out"
-}
+  in: 'in',
+  out: 'out',
+};
 
 const test = {
-  test: "Hmm"
-}
-
+  test: 'Hmm',
+};
 
 module.exports = {
   LOGIN_MODE,
-  test
-}
+  test,
+};

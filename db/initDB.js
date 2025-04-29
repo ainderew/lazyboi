@@ -10,18 +10,20 @@ const db = new sqlite3.Database(dbPath, (err) => {
     console.log('Connected to the SQLite database.');
 
     // Create a transactions table if it doesn't exist
-    db.run(`CREATE TABLE IF NOT EXISTS timekeeping (
+    db.run(
+      `CREATE TABLE IF NOT EXISTS timekeeping (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       dateTime TEXT,
       type TEXT,
       status TEXT
-    )`, (err) => {
-      if (err) {
-        console.error('Error creating table:', err.message);
-      }
-    });
+    )`,
+      (err) => {
+        if (err) {
+          console.error('Error creating table:', err.message);
+        }
+      },
+    );
   }
 });
 
-module.exports = db
-
+module.exports = db;

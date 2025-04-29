@@ -1,69 +1,74 @@
-*{
+* {
   box-sizing: border-box;
-  padding: 0; 
+  padding: 0;
   margin: 0;
-  font-family: "Roboto";
-
+  font-family: 'Roboto';
 }
 
-body{
+body {
   width: 100%;
   height: 100vh;
 
   padding: 2rem;
-  background-color: #011A32;
+  background-color: #011a32;
   color: white;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-
 }
 
-.grouper{
+.grouper {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.main-container{
+.grouper-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.main-container {
   border-radius: 0.3rem;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
-.log-container{
+.log-container {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.header-text{
+.header-text {
   padding: 0.5rem 1rem;
   font-size: 1rem;
   font-weight: 600;
   color: #505050;
 }
 
-.value-text{
+.value-text {
 }
 
-.header-container{
+.header-container {
   height: 3rem;
-  background-color: #C0C0C0;
+  background-color: #c0c0c0;
   display: flex;
   align-items: center;
 }
 
-.row-text, 
-.header-container{
+.row-text,
+.header-container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr;
   width: 100%;
 }
 
-.data-row{
+.data-row {
   padding: 0.5rem 1rem;
   height: 5rem;
   background-color: white;
@@ -76,60 +81,56 @@ body{
   border-radius: 0.2rem;
 }
 
-.success-text{
+.success-text {
   color: limegreen;
 }
 
-
-.status-bubble{
+.status-bubble {
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 50%;
 }
 
-.success-bubble{
-    background-color: limegreen;
+.success-bubble {
+  background-color: limegreen;
 }
 
-.fail-bubble{
+.fail-bubble {
   background-color: red;
 }
 
-.fail-text{
+.fail-text {
   color: red;
   font-weight: 600;
-
 }
 
-
-
 /* Status Indicator section*/
-.status-container{
+.status-container {
   display: flex;
   gap: 1rem;
 }
 
-.status-header-text{
+.status-header-text {
   font-size: 1.1rem;
   font-weight: 500;
 }
 
-.status-description-text{
+.status-description-text {
   font-size: 0.9rem;
 }
 
-.cron-status-container{
+.cron-status-container {
   height: 11rem;
   width: 20rem;
   padding: 2rem;
   background: white;
   display: flex;
-  flex-direction:column;
-  justify-content: space-around;
+  flex-direction: column;
+  gap: 1rem;
   color: #01274d;
   border-radius: 0.3rem;
 }
-.cron-status-indicator{
+.cron-status-indicator {
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 50%;
@@ -142,15 +143,21 @@ body{
   overflow: hidden;
 }
 
-.cron-status-indicator.active{
+.cron-status-indicator.active {
   border: 3px solid limegreen;
 }
 
-.indicator-img{
+.indicator-img {
   width: 1.5rem;
   height: 1.5rem;
 }
 
+.cron-next-active-mode-label,
+.cron-next-active-time-label {
+  font-weight: 600;
+}
 
-
-.cron-status-text
+.cron-next-active-time,
+.cron-next-active-mode {
+  font-weight: 400;
+}

@@ -1,9 +1,11 @@
-const CheckRecords = require("./get-records.route")
-const CheckCronStatus = require("./check-cron-status.route")
-const StartCron = require("./start-cron.route")
+const CheckRecords = require('./get-records.route');
+const CheckCronStatus = require('./check-cron-status.route');
+const CheckNextSproutAutomation = require('./check-next-sprout-automation.route');
+const StartCron = require('./start-cron.route');
 
 module.exports = [
   CheckCronStatus,
   CheckRecords,
   StartCron,
-]
+  CheckNextSproutAutomation,
+];
