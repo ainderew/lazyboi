@@ -10,8 +10,8 @@ async function automateSprout(mode) {
   console.log('Running Sprout Automation');
 
   const browser = await puppeteer.launch({
-    headless: 'false',
-    args: [''],
+    headless: false,
+    args: ['--no-sandbox'],
     executablePath:
       process.env.NODE_ENV === 'production'
         ? process.env.PUPPETEER_EXECUTABLE_PATH
