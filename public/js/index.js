@@ -1,9 +1,8 @@
 const testH1 = document.querySelector('.log-container');
 
+//TODO: change before pushing
 const isProd = true;
-const API_ENDPOINT = isProd
-  ? 'http://128.199.145.173:4200'
-  : 'http://localhost:4200';
+const API_ENDPOINT = isProd ? 'https://workdash.site' : 'http://localhost:4200';
 // reminder comment proper
 
 fetch(`${API_ENDPOINT}/get-records`)
