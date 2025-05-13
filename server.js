@@ -16,7 +16,7 @@ app.use(
     secret: 'supersecret',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }, // Set to true only if using HTTPS
+    cookie: { secure: process.env.NODE_ENV === 'production' }, // Set to true only if using HTTPS
   }),
 );
 

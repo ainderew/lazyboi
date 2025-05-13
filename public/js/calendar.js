@@ -11,6 +11,7 @@ fetch(`${API_ENDPOINT}/get-calendar-data`)
   .catch((err) => console.log(err));
 
 function handleCalendarData(responseData) {
+  console.log(responseData);
   const createdCalendarList = responseData.map((el, index) => {
     const calendarItem = document.createElement('div');
     calendarItem.className = 'calendar-item element';
