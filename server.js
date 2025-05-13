@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session');
 const app = express();
 const path = require('path');
 const automateSprout = require('./login');
@@ -9,6 +10,15 @@ const RecordKeeping = require('./service/RecordKeeping.service');
 const { LOGIN_MODE } = require('./enums');
 const logger = require('./utils/logger');
 const routes = require('./routes/index.route.js');
+
+app.use(
+  session({
+    secret: 'supersecret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }, // Set to true only if using HTTPS
+  }),
+);
 
 app.use('/boom', express.static(path.join(__dirname, 'public')));
 

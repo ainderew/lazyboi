@@ -12,9 +12,9 @@
     />
   </head>
   <body>
-    <div class="status-container">
+    <div class="left-wrapper">
       <div class="status-container">
-        <div class="cron-status-container">
+        <div class="cron-status-container element">
           <span class="status-header-text">Scheduled Login and Logout</span>
 
           <div class="grouper">
@@ -27,10 +27,8 @@
             <a href="https://workdash.site/start-cron">here</a>
           </span>
         </div>
-      </div>
 
-      <div class="status-container">
-        <div class="cron-status-container">
+        <div class="cron-status-container element">
           <span class="status-header-text">Scheduled Sprout Automation</span>
 
           <div class="grouper-vertical">
@@ -46,17 +44,42 @@
           </div>
         </div>
       </div>
+
+      <div class="main-container">
+        <div class="header-container">
+          <span class="header-text">Date and Time</span>
+          <span class="header-text">Login Type</span>
+          <span class="header-text">Status</span>
+        </div>
+        <div class="log-container">Loading...</div>
+      </div>
     </div>
 
-    <div class="main-container">
-      <div class="header-container">
-        <span class="header-text">Date and Time</span>
-        <span class="header-text">Login Type</span>
-        <span class="header-text">Status</span>
+    <div class="right-wrapper">
+      <div class="calendar-event-list">
+        <div class="calendar-list-head element rounded">
+          <div class="calendar-text-container">
+            <span class="calendar-list-head-text">Meetings for today</span>
+            <span class="calendar-list-head-subtext"
+              >Last meeting of the day</span
+            >
+          </div>
+          <span class="calendar-list-number">3</span>
+        </div>
       </div>
-      <div class="log-container">Loading...</div>
+    </div>
+
+    <div class="spotify-container">
+      <div class="album-cover-container element rounded">
+        <img
+          class="album-cover-img"
+          src="./assets/example.webp"
+          alt="example"
+        />
+      </div>
     </div>
 
     <script type="module" src="./js/index.js" defer></script>
+    <script type="module" src="./js/calendar.js"></script>
   </body>
 </html>
