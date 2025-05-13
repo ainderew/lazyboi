@@ -1,7 +1,7 @@
 const calendarEventList = document.querySelector('.calendar-event-list');
 
 //TODO: change before pushing
-const isProd = false;
+const isProd = true;
 const API_ENDPOINT = isProd ? 'https://workdash.site' : 'http://localhost:4200';
 // reminder comment proper
 
