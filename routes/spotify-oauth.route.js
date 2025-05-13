@@ -69,7 +69,7 @@ router.get('/spotify/callback', async (req, res) => {
 
     const body = await response.json();
     const access_token = body.access_token;
-    req.session.token = access_token;
+    req.session.spotifyToken = access_token;
 
     res.redirect('/boom');
   } catch (err) {

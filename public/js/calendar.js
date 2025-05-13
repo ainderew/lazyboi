@@ -7,7 +7,14 @@ const API_ENDPOINT = isProd ? 'https://workdash.site' : 'http://localhost:4200';
 
 fetch(`${API_ENDPOINT}/get-calendar-data`)
   .then((res) => res.json())
-  .then((data) => handleCalendarData(data))
+  .then((data) => {
+    if (data.status > 400) {
+      alert('GOOGLE UNAUTHORIZED');
+      return;
+    }
+
+    handleCalendarData(data);
+  })
   .catch((err) => console.log(err));
 
 function handleCalendarData(responseData) {
