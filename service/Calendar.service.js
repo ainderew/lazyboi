@@ -1,3 +1,4 @@
+const { toZonedTime } = require('date-fns-tz');
 const { google } = require('googleapis');
 const {
   setSeconds,
@@ -13,14 +14,14 @@ class CalendarService {
       const auth = new google.auth.OAuth2();
       auth.setCredentials(tokens);
 
-      const now = new Date();
+      const manilaNow = toZonedTime(new Date(), 'Asia/Manila');
 
       // 10:00 PM today
-      const shiftStart = setSeconds(setMinutes(setHours(now, 22), 0), 0);
+      const shiftStart = setSeconds(setMinutes(setHours(manilaNow, 22), 0), 0);
 
       // 6:00 AM tomorrow
       const shiftEnd = setSeconds(
-        setMinutes(setHours(addDays(now, 1), 6), 0),
+        setMinutes(setHours(addDays(manilaNow, 1), 6), 0),
         0,
       );
 

@@ -70,16 +70,48 @@
     </div>
 
     <div class="spotify-container">
-      <div class="album-cover-container element rounded">
-        <img
-          class="album-cover-img"
-          src="./assets/example.webp"
-          alt="example"
-        />
+      <div class="player-container element rounded">
+        <div class="album-cover-container">
+          <img
+            class="album-cover-img"
+            src="./assets/example.webp"
+            alt="example"
+          />
+        </div>
+        <span class="player-song-title">...</span>
+        <span class="player-song-artist">...</span>
+
+        <div class="player-control-container">
+          <!-- prev button -->
+          <div class="btn-control-prev">
+            <img
+              class="control-btn-img"
+              src="./assets/music_controls_svgs/next.svg"
+              alt="previous song"
+            />
+          </div>
+          <!-- play button -->
+          <div class="btn-control-toggle-play">
+            <img
+              class="control-btn-img music-play-btn"
+              src="./assets/music_controls_svgs/play.svg"
+              alt="toggle play or pause song"
+            />
+          </div>
+          <div class="btn-control-next">
+            <img
+              class="control-btn-img"
+              src="./assets/music_controls_svgs/next.svg"
+              alt="previous song"
+            />
+          </div>
+        </div>
       </div>
     </div>
 
-    <script type="module" src="./js/index.js" defer></script>
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <script type="module" src="./js/index.js"></script>
     <script type="module" src="./js/calendar.js"></script>
+    <script type="module" src="./js/spotify.js"></script>
   </body>
 </html>

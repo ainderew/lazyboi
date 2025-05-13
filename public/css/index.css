@@ -103,6 +103,26 @@ body {
   font-weight: 500;
 }
 
+/*SONG PLAYER*/
+.player-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.player-control-container {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-control-prev {
+  transform: scaleX(-1);
+}
+
 .spotify-container {
   width: 30rem;
 }

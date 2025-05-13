@@ -14,7 +14,7 @@ const routes = require('./routes/index.route.js');
 app.use(
   session({
     secret: 'supersecret',
-    resave: false,
+    resave: true,
     saveUninitialized: true,
     cookie: { secure: process.env.NODE_ENV === 'production' }, // Set to true only if using HTTPS
   }),
