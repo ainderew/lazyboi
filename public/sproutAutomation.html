@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Logs of timekeeping</title>
+    <link rel="stylesheet" href="/css/sproutAutomation.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="main-wrapper">
+      <div class="status-container">
+        <div class="cron-status-container element">
+          <span class="status-header-text">Scheduled Login and Logout</span>
+
+          <div class="grouper">
+            <div class="cron-status-indicator"></div>
+            <span class="cron-status-text">Not Active</span>
+          </div>
+
+          <span class="status-description-text">
+            to start the cron job go
+            <a href="https://workdash.site/start-cron">here</a>
+          </span>
+        </div>
+
+        <div class="cron-status-container element">
+          <span class="status-header-text">Scheduled Sprout Automation</span>
+
+          <div class="grouper-vertical">
+            <span class="cron-next-active-time-label"
+              >Time:
+              <span class="cron-next-active-time"></span>
+            </span>
+
+            <span class="cron-next-active-mode-label"
+              >Mode:
+              <span class="cron-next-active-mode"></span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="main-container">
+        <div class="header-container">
+          <span class="header-text">Date and Time</span>
+          <span class="header-text">Login Type</span>
+          <span class="header-text">Status</span>
+        </div>
+        <div class="log-container">Loading...</div>
+      </div>
+    </div>
+
+    <script type="module" src="/js/sproutAutomation.js"></script>
+  </body>
+</html>

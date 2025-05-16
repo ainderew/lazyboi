@@ -1,28 +1,38 @@
 const SPOTIFY_LOCALSTORAGE_KEY = 'spotify_token';
+const spotifyLoginBtn = document.getElementById('spotify-login-btn');
 
 //TODO: change before pushing
 const isProd = true;
 const API_ENDPOINT = isProd ? 'https://workdash.site' : 'http://127.0.0.1:4200';
 
 async function handleToken() {
-  const localStoreToken = localStorage.getItem(SPOTIFY_LOCALSTORAGE_KEY);
-  if (localStoreToken) return;
-
   try {
     const resData = await fetch(`${API_ENDPOINT}/spotify/get-token`);
+    const localStoreToken = localStorage.getItem(SPOTIFY_LOCALSTORAGE_KEY);
 
     if (resData.status > 400 || resData.status === 204) {
-      //TODO: handle spotify Unauthorized
-      alert('Unauthorized');
+      if (localStoreToken) {
+        localStorage.removeItem(SPOTIFY_LOCALSTORAGE_KEY);
+      }
+
       return;
     }
+
     const { token } = await resData.json();
 
     if (!token) {
       console.error('NO SPOTIFY TOKEN');
       return;
     }
+
+    if (localStoreToken === token) {
+      console.log(localStoreToken);
+      spotifyLoginBtn.remove();
+      return;
+    }
+
     localStorage.setItem(SPOTIFY_LOCALSTORAGE_KEY, token);
+    spotifyLoginBtn.remove();
   } catch (err) {
     alert(err);
   }
@@ -30,6 +40,10 @@ async function handleToken() {
 
 await handleToken();
 
+const script = document.createElement('script');
+script.src = 'https://sdk.scdn.co/spotify-player.js';
+script.async = true;
+document.body.appendChild(script);
 window.onSpotifyWebPlaybackSDKReady = () => {
   const token = localStorage.getItem(SPOTIFY_LOCALSTORAGE_KEY);
   const player = new Spotify.Player({

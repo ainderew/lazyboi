@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <title>Logs of timekeeping</title>
     <link rel="stylesheet" href="./css/index.css" />
+    <link rel="stylesheet" href="./css/jira.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -12,46 +13,25 @@
     />
   </head>
   <body>
+    <div class="board-wrapper ticket-column element">
+      <!-- <div class="jira-ticket element"> -->
+      <!--   <div class="ticket-header-container"> -->
+      <!--     <span class="jira-ticket-key">REM-142</span> -->
+      <!--     <span class="jira-ticket-status">To Do</span> -->
+      <!--   </div> -->
+      <!--   <span class="jira-ticket-name">Do Something Here</span> -->
+      <!-- </div> -->
+    </div>
     <div class="left-wrapper">
-      <div class="status-container">
-        <div class="cron-status-container element">
-          <span class="status-header-text">Scheduled Login and Logout</span>
-
-          <div class="grouper">
-            <div class="cron-status-indicator"></div>
-            <span class="cron-status-text">Not Active</span>
-          </div>
-
-          <span class="status-description-text">
-            to start the cron job go
-            <a href="https://workdash.site/start-cron">here</a>
-          </span>
-        </div>
-
-        <div class="cron-status-container element">
-          <span class="status-header-text">Scheduled Sprout Automation</span>
-
-          <div class="grouper-vertical">
-            <span class="cron-next-active-time-label"
-              >Time:
-              <span class="cron-next-active-time"></span>
-            </span>
-
-            <span class="cron-next-active-mode-label"
-              >Mode:
-              <span class="cron-next-active-mode"></span>
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div class="main-container">
-        <div class="header-container">
-          <span class="header-text">Date and Time</span>
-          <span class="header-text">Login Type</span>
-          <span class="header-text">Status</span>
-        </div>
-        <div class="log-container">Loading...</div>
+      <!-- <div class="jira-selected-container"></div> -->
+      <div class="jira-tickets-list ticket-column">
+        <!-- <div class="jira-ticket element"> -->
+        <!--   <div class="ticket-header-container"> -->
+        <!--     <span class="jira-ticket-key">REM-142</span> -->
+        <!--     <span class="jira-ticket-status">To Do</span> -->
+        <!--   </div> -->
+        <!--   <span class="jira-ticket-name">Do Something Here</span> -->
+        <!-- </div> -->
       </div>
     </div>
 
@@ -64,7 +44,15 @@
               >Last meeting of the day</span
             >
           </div>
-          <span class="calendar-list-number">3</span>
+          <span class="calendar-list-number"></span>
+          <a class="google-login-container rounded" href="/auth/google">
+            <img
+              class="google-login-img"
+              src="./assets/google-logo.svg"
+              alt="google calendar logo"
+            />
+            Sign in with Google
+          </a>
         </div>
       </div>
     </div>
@@ -74,12 +62,26 @@
         <div class="album-cover-container">
           <img
             class="album-cover-img"
-            src="./assets/example.webp"
+            src="./assets/defaul-image-player.webp"
             alt="example"
           />
         </div>
+
+        <a
+          id="spotify-login-btn"
+          class="btn-login-container rounded"
+          href="/auth/spotify"
+        >
+          <img
+            class="google-login-img"
+            src="./assets/spotify-logo.svg"
+            alt="google calendar logo"
+          />
+          Sign in with Spotify
+        </a>
+
         <span class="player-song-title">...</span>
-        <span class="player-song-artist">...</span>
+        <span class="player-song-artist">Artist Name</span>
 
         <div class="player-control-container">
           <!-- prev button -->
@@ -109,9 +111,9 @@
       </div>
     </div>
 
-    <script src="https://sdk.scdn.co/spotify-player.js"></script>
-    <script type="module" src="./js/index.js"></script>
+    <!-- <script src="https://sdk.scdn.co/spotify-player.js"></script> -->
     <script type="module" src="./js/calendar.js"></script>
     <script type="module" src="./js/spotify.js"></script>
+    <script type="module" src="./js/jira.js"></script>
   </body>
 </html>

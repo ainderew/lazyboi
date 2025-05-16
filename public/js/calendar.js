@@ -2,17 +2,21 @@ const calendarEventList = document.querySelector('.calendar-event-list');
 
 //TODO: change before pushing
 const isProd = true;
-const API_ENDPOINT = isProd ? 'https://workdash.site' : 'http://localhost:4200';
+const API_ENDPOINT = isProd ? 'https://workdash.site' : 'http://127.0.0.1:4200';
 // reminder comment proper
 
 fetch(`${API_ENDPOINT}/get-calendar-data`)
-  .then((res) => res.json())
-  .then((data) => {
-    if (data.status > 400) {
-      alert('GOOGLE UNAUTHORIZED');
+  .then((res) => {
+    if (res.status > 400) {
+      //TODO: handle unauthed in google
       return;
     }
+    const googleSignInBtn = document.querySelector('.google-login-container');
+    googleSignInBtn.remove();
 
+    return res.json();
+  })
+  .then((data) => {
     handleCalendarData(data);
   })
   .catch((err) => console.log(err));

@@ -3,4 +3,5 @@ node_modules/*
 logs/*
 logs
 .env
+jira-response-example.json
 *.db

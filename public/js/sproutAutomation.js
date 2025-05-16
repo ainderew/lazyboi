@@ -45,8 +45,8 @@ function displayCronStatus(data) {
 
   const { isAutomatedLogsActive } = data;
   isAutomatedLogsActive
-    ? (indicator.innerHTML = `<img class="indicator-img" src="./assets/check.svg" alt="check mark">`)
-    : (indicator.innerHTML = `<img class="indicator-img" src="./assets/warning.svg" alt="check mark">`);
+    ? (indicator.innerHTML = `<img class="indicator-img" src="/assets/check.svg" alt="check mark">`)
+    : (indicator.innerHTML = `<img class="indicator-img" src="/assets/warning.svg" alt="check mark">`);
   isAutomatedLogsActive ? (statusText.innerText = 'Running') : 'Not Active';
   isAutomatedLogsActive && indicator.classList.add('active');
 }
