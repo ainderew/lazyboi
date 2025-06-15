@@ -1,4 +1,4 @@
-const CalendarService = require('../service/Calendar.service');
+import CalendarService from '../service/Calendar.service.js';
 
 async function calendarController(req, res) {
   const token = req.session?.token;
@@ -10,4 +10,4 @@ async function calendarController(req, res) {
   res.json(resa);
 }
 
-module.exports = calendarController;
+export default calendarController;

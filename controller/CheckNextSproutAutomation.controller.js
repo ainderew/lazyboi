@@ -1,7 +1,7 @@
-const config = require('../utils/config');
+import config from '../utils/config.js';
 
 function checkNextSproutAutomation(_, res) {
   res.json({ nextSproutAutomation: config.NEXT_SPROUT_AUTOMATION });
 }
 
-module.exports = checkNextSproutAutomation;
+export default checkNextSproutAutomation;

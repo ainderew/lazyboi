@@ -1,7 +1,7 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const checkCronStatus = require('../controller/CheckCronStatus.controller');
+import checkCronStatus from '../controller/CheckCronStatus.controller.js';
 
 router.get('/check-cron-status', checkCronStatus);
 
-module.exports = router;
+export default router;

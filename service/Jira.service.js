@@ -1,4 +1,4 @@
-const dotenv = require('dotenv');
+import dotenv from 'dotenv';
 dotenv.config();
 
 class JiraService {
@@ -41,4 +41,5 @@ class JiraService {
     }
   }
 }
-module.exports = JiraService;
+
+export default JiraService;

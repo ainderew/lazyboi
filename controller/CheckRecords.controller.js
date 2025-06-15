@@ -1,4 +1,4 @@
-const RecordKeeping = require('../service/RecordKeeping.service');
+import RecordKeeping from '../service/RecordKeeping.service.js';
 
 async function checkRecord(req, res) {
   const rk = new RecordKeeping();
@@ -6,4 +6,4 @@ async function checkRecord(req, res) {
   res.json(records);
 }
 
-module.exports = checkRecord;
+export default checkRecord;

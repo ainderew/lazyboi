@@ -1,41 +1,67 @@
-const express = require('express');
-const session = require('express-session');
-const app = express();
-const path = require('path');
-const automateSprout = require('./login');
-const retryCatch = require('./retryCatch');
-const db = require('./db/initDB');
+import express from 'express';
+import session from 'express-session';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import routes from './routes/index.route.js';
+import startAttendanceCron from './utils/cronManagement.js';
+import AttendanceService from './service/Attendance.service.js';
 
-const { LOGIN_MODE } = require('./enums');
-const logger = require('./utils/logger');
-const routes = require('./routes/index.route.js');
+/**
+ * Main entry point for the server application.
+ * Sets up middleware, routes, and starts the server.
+ */
+function main() {
+  const app = express();
+  const att = new AttendanceService();
 
-app.use(
-  session({
-    secret: 'supersecret',
-    resave: true,
-    saveUninitialized: true,
-    cookie: { secure: process.env.NODE_ENV === 'production' }, // Set to true only if using HTTPS
-  }),
-);
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
 
-app.use('/', express.static(path.join(__dirname, 'public')));
-app.use('/boom', async function (_, res) {
-  res.sendFile(path.join(__dirname, 'public/sproutAutomation.html'));
-});
-app.use('/test-login', async function (_, res) {
-  logger.info('TEST LOGIN');
-  res.sendFile(path.join(__dirname, 'public/testing.html'));
-  const isSuccess = await retryCatch(automateSprout, 'in', 10);
-});
+  try {
+    startAttendanceCron();
+    app.use(
+      session({
+        secret: 'supersecret',
+        resave: true,
+        saveUninitialized: true,
+        cookie: { secure: process.env.NODE_ENV === 'production' },
+      }),
+    );
+    app.use('/', express.static(path.join(__dirname, 'public')));
+    app.use('/boom', async function (_, res) {
+      res.sendFile(path.join(__dirname, 'public/sproutAutomation.html'));
+    });
+    app.use('/test-login', async function (_, res) {
+      try {
+        await att.performAutomatedAttendance('in');
+      } catch (error) {
+        console.log(error);
+        res.sendFile(path.join(__dirname, 'public/404.html'));
+      }
 
-app.get('/test-logout', async function (_, res) {
-  await automateSprout(LOGIN_MODE.out);
-  res.send('TEST LOGOUT ROUTE');
-});
+      res.sendFile(path.join(__dirname, 'public/testing.html'));
+    });
 
-app.use(...routes);
+    app.get('/test-logout', async function (_, res) {
+      try {
+        await att.performAutomatedAttendance('out');
+      } catch (error) {
+        console.log(error);
+        res.sendFile(path.join(__dirname, 'public/404.html'));
+      }
 
-app.listen(4200, () => {
-  console.log('Server Running PORT: 4200');
-});
+      res.send('TEST LOGOUT ROUTE');
+    });
+
+    app.use(...routes);
+
+    app.listen(4200, () => {
+      console.log('Server Running PORT: 4200');
+    });
+  } catch (error) {
+    console.log(error);
+    throw new Error(`Server Error: ${error.message}`);
+  }
+}
+
+main();

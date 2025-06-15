@@ -26,7 +26,7 @@ function handleJiraTicketRender(responseData) {
   const jiraTickets = responseData.map((el, index) => {
     const jiraTicketItem = document.createElement('div');
     jiraTicketItem.draggable = 'true';
-    jiraTicketItem.className = 'jira-ticket element';
+    jiraTicketItem.className = 'jira-ticket element rounded';
 
     const jiraTicketProjectIcon = document.createElement('img');
     jiraTicketProjectIcon.className = 'jira-ticket-project-img';
@@ -115,7 +115,7 @@ function initializeDrag() {
     col.addEventListener('dragover', (e) => {
       e.preventDefault();
       const currTicket = document.querySelector('.dragging');
-      col.prepend(currTicket);
+      col.append(currTicket);
     }),
   );
 }

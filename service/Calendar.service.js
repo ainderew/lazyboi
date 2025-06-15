@@ -1,12 +1,6 @@
-const { toZonedTime } = require('date-fns-tz');
-const { google } = require('googleapis');
-const {
-  setSeconds,
-  setMinutes,
-  setHours,
-  addDays,
-  format,
-} = require('date-fns');
+import { toZonedTime } from 'date-fns-tz';
+import { google } from 'googleapis';
+import { setSeconds, setMinutes, setHours, addDays, format } from 'date-fns';
 
 class CalendarService {
   async getCalendarEvents(tokens) {
@@ -53,4 +47,4 @@ class CalendarService {
   }
 }
 
-module.exports = CalendarService;
+export default CalendarService;

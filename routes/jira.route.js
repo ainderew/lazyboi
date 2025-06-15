@@ -1,9 +1,9 @@
-const express = require('express');
-const JiraController = require('../controller/Jira.controller');
-const router = express.Router();
+import express from 'express';
+import JiraController from '../controller/Jira.controller.js';
 
+const router = express.Router();
 const jController = new JiraController();
 
 router.get('/jira/user-undone-tickets', jController.getUndoneTickets);
 
-module.exports = router;
+export default router;

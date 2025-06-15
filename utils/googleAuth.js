@@ -1,5 +1,5 @@
-const { google } = require('googleapis');
-const dotenv = require('dotenv');
+import { google } from 'googleapis';
+import dotenv from 'dotenv';
 dotenv.config();
 
 const oauth2Client = new google.auth.OAuth2(
@@ -8,4 +8,4 @@ const oauth2Client = new google.auth.OAuth2(
   process.env.REDIRECT_URI, // e.g. http://localhost:3000/auth/google/callback
 );
 
-module.exports = oauth2Client;
+export default oauth2Client;

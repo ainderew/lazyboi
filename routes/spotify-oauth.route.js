@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
-const dotenv = require('dotenv');
+import dotenv from 'dotenv';
 dotenv.config();
 
 const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
@@ -77,4 +77,4 @@ router.get('/spotify/callback', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

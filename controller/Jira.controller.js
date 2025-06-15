@@ -1,4 +1,4 @@
-const JiraService = require('../service/Jira.service');
+import JiraService from '../service/Jira.service.js';
 
 class JiraController {
   async getUndoneTickets(req, res) {
@@ -9,9 +9,9 @@ class JiraController {
 
       res.json(issues);
     } catch (err) {
-      throw err;
+      throw new Error(`Error fetching undone tickets: ${err.message}`);
     }
   }
 }
 
-module.exports = JiraController;
+export default JiraController;

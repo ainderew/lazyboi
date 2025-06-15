@@ -1,14 +1,14 @@
-const CheckRecords = require('./get-records.route');
-const CheckCronStatus = require('./check-cron-status.route');
-const CheckNextSproutAutomation = require('./check-next-sprout-automation.route');
-const StartCron = require('./start-cron.route');
-const Calendar = require('./get-calendar-data.route');
-const GoogleOauth = require('./google-oauth.route');
-const SpotifyOauth = require('./spotify-oauth.route');
-const Spotify = require('./spotify.route');
-const Jira = require('./jira.route');
+import CheckRecords from './get-records.route.js';
+import CheckCronStatus from './check-cron-status.route.js';
+import CheckNextSproutAutomation from './check-next-sprout-automation.route.js';
+import StartCron from './start-cron.route.js';
+import Calendar from './get-calendar-data.route.js';
+import GoogleOauth from './google-oauth.route.js';
+import SpotifyOauth from './spotify-oauth.route.js';
+import Spotify from './spotify.route.js';
+import Jira from './jira.route.js';
 
-module.exports = [
+export default [
   Calendar,
   CheckCronStatus,
   CheckRecords,

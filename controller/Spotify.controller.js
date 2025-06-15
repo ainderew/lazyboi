@@ -1,4 +1,4 @@
-const SpotifyService = require('../service/Spotify.service');
+import SpotifyService from '../service/Spotify.service.js';
 
 class SpotifyController {
   #spotifyService;
@@ -20,4 +20,4 @@ class SpotifyController {
   }
 }
 
-module.exports = SpotifyController;
+export default SpotifyController;

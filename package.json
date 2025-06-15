@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
+  "type": "module",
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -23,6 +24,12 @@
     "winston": "^3.15.0"
   },
   "devDependencies": {
-    "prettier": "3.5.3"
+    "@eslint/css": "^0.9.0",
+    "@eslint/js": "^9.29.0",
+    "@eslint/json": "^0.12.0",
+    "@eslint/markdown": "^6.5.0",
+    "eslint": "^9.29.0",
+    "globals": "^16.2.0",
+    "prettier": "^3.5.3"
   }
 }

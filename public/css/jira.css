@@ -11,6 +11,20 @@
   overflow-y: auto;
 }
 
+.colum-heading-text {
+  position: sticky;
+  top: 0;
+  padding: 1rem;
+  font-weight: 500;
+
+  background: #1e223350;
+}
+
+.ticket-column {
+  padding: 1rem;
+  overflow-y: auto;
+}
+
 .jira-ticket {
   display: flex;
   flex-direction: column;

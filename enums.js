@@ -1,13 +1,8 @@
-const LOGIN_MODE = {
+export const LOGIN_MODE = {
   in: 'in',
   out: 'out',
 };
 
-const test = {
+export const test = {
   test: 'Hmm',
-};
-
-module.exports = {
-  LOGIN_MODE,
-  test,
 };

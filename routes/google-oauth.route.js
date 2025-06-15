@@ -1,6 +1,6 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const oauth2Client = require('../utils/googleAuth');
+import oauth2Client from '../utils/googleAuth.js';
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 
@@ -27,4 +27,4 @@ router.get('/auth/google/callback', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

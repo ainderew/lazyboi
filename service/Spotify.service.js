@@ -10,4 +10,4 @@ class SpotifyService {
   }
 }
 
-module.exports = SpotifyService;
+export default SpotifyService;

@@ -1,26 +1,34 @@
-const RecordKeeping = require('./service/RecordKeeping.service');
-const logger = require('./utils/logger');
+import logger from './utils/logger.js';
 
-async function retryCatch(callback, loginMode, retries) {
-  try {
-    await callback(loginMode);
-    return true;
-  } catch (error) {
-    logger.log({ level: 'error', message: `retry function: ${error.message}` });
-    if (retries > 0) {
+async function retryCatch(callback, loginMode, retries, recordKeeping = null) {
+  let attempt = 0;
+
+  while (attempt < retries) {
+    try {
+      await callback(loginMode);
+      return true;
+    } catch (error) {
+      attempt++;
+
       logger.log({
-        level: 'info',
-        message: `RETRYING: retries left - ${retries}`,
+        level: 'error',
+        message: `retry function: ${error.message}`,
       });
-      await retryCatch(callback, loginMode, retries - 1);
-    } else {
-      console.error(error);
-      logger.error({ message: error.message, stack: error.stack });
-      const rk = new RecordKeeping();
-      rk.writeFailedAttempt(loginMode);
-      return false;
+
+      if (attempt > retries) {
+        console.error('No more tries - error:', error);
+        logger.error({ message: error.message, stack: error.stack });
+
+        if (recordKeeping) {
+          recordKeeping.writeFailedAttempt(loginMode);
+        }
+
+        return false;
+      }
+
+      logger.info(`Retrying... remaining retries: ${retries - attempt}`);
     }
   }
 }
 
-module.exports = retryCatch;
+export default retryCatch;

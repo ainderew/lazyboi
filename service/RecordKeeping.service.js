@@ -1,5 +1,5 @@
-const db = require('../db/initDB');
-const logger = require('../utils/logger');
+import db from '../db/initDB.js';
+import logger from '../utils/logger.js';
 
 class RecordKeeping {
   #DATE_OPTION;
@@ -63,4 +63,4 @@ class RecordKeeping {
   }
 }
 
-module.exports = RecordKeeping;
+export default RecordKeeping;

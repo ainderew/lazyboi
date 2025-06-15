@@ -1,7 +1,7 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const checkNextSproutAutomation = require('../controller/CheckNextSproutAutomation.controller');
+import checkNextSproutAutomation from '../controller/CheckNextSproutAutomation.controller.js';
 
 router.get('/check-next-sprout-automation', checkNextSproutAutomation);
 
-module.exports = router;
+export default router;
