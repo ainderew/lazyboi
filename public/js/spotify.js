@@ -34,7 +34,8 @@ async function handleToken() {
     localStorage.setItem(SPOTIFY_LOCALSTORAGE_KEY, token);
     spotifyLoginBtn.remove();
   } catch (err) {
-    alert(err);
+    console.error('Error fetching Spotify token:', err);
+    throw new Error(err);
   }
 }
 
