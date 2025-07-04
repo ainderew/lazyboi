@@ -2,7 +2,7 @@ const SPOTIFY_LOCALSTORAGE_KEY = 'spotify_token';
 const spotifyLoginBtn = document.getElementById('spotify-login-btn');
 
 //TODO: change before pushing
-const isProd = true;
+const isProd = false;
 const API_ENDPOINT = isProd ? 'https://workdash.site' : 'http://127.0.0.1:4200';
 
 async function handleToken() {
@@ -26,7 +26,6 @@ async function handleToken() {
     }
 
     if (localStoreToken === token) {
-      console.log(localStoreToken);
       spotifyLoginBtn.remove();
       return;
     }
@@ -39,13 +38,30 @@ async function handleToken() {
   }
 }
 
-await handleToken();
+async function loadSpotifySDK() {
+  if (window.Spotify) {
+    return;
+  }
 
-const script = document.createElement('script');
-script.src = 'https://sdk.scdn.co/spotify-player.js';
-script.async = true;
-document.body.appendChild(script);
-window.onSpotifyWebPlaybackSDKReady = () => {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://sdk.scdn.co/spotify-player.js';
+    script.async = true;
+    script.onerror = () => {
+      reject(new Error('Failed to load Spotify SDK'));
+    };
+    console.log('DEBUG 1');
+    document.body.appendChild(script);
+    window.onSpotifyWebPlaybackSDKReady = () => {
+      console.log('Spotify SDK loaded');
+      resolve();
+    };
+    console.log('DEBUG 2');
+  });
+}
+
+async function createSpotifyPlayer() {
+  console.log('DEBUG 3');
   const token = localStorage.getItem(SPOTIFY_LOCALSTORAGE_KEY);
   const player = new Spotify.Player({
     name: 'workdash',
@@ -54,6 +70,9 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     },
     volume: 1,
   });
+
+  console.log('PLAYER');
+  console.log(player);
 
   // Ready State
   player.addListener('ready', async ({ device_id }) => {
@@ -135,6 +154,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     paused: boolean, loading: boolean, duration: number, position: number
     **/
     const state = await player.getCurrentState();
+    console.log('Current state:', state);
     renderTogglePlayButton(state.paused);
   };
 
@@ -147,11 +167,15 @@ window.onSpotifyWebPlaybackSDKReady = () => {
   document.querySelector('.btn-control-prev').onclick = async function () {
     await player.previousTrack();
   };
+}
 
-  player.connect();
-};
+(async function initSpotify() {
+  await handleToken();
+  await loadSpotifySDK();
+  await createSpotifyPlayer();
+})();
 
-// Rendering functions
+// Rendering functions - Helper functions for UI updates
 
 function renderCurrentSongImage(imgUrl) {
   const songImageContainer = document.querySelector('.album-cover-img');

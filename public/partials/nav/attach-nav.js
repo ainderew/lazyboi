@@ -28,5 +28,7 @@ function determinAttachNav() {
   console.log('current path', currPath);
 }
 
-await attachNav();
-determinAttachNav();
+(async function initNav() {
+  await attachNav();
+  determinAttachNav();
+})();

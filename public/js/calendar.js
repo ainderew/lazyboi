@@ -1,7 +1,7 @@
 const calendarEventList = document.querySelector('.calendar-event-list');
 
 //TODO: change before pushing
-const isProd = true;
+const isProd = false;
 const API_ENDPOINT = isProd ? 'https://workdash.site' : 'http://127.0.0.1:4200';
 // reminder comment proper
 
@@ -29,7 +29,6 @@ function handleCalendarData(responseData) {
     const calendarTitle = document.createElement('span');
     calendarTitle.className = 'calendar-item-title';
     calendarTitle.innerText = el.summary;
-    console.log(el.summary);
 
     const calendarDateTag = document.createElement('div');
     calendarDateTag.className = 'calendar-date-tag';

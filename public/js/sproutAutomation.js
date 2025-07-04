@@ -1,7 +1,7 @@
 const testH1 = document.querySelector('.log-container');
 
 //TODO: change before pushing
-const isProd = true;
+const isProd = false;
 const API_ENDPOINT = isProd ? 'https://workdash.site' : 'http://localhost:4200';
 // reminder comment proper
 

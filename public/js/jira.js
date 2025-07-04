@@ -1,5 +1,5 @@
 //TODO: change before pushing
-const isProd = true;
+const isProd = false;
 const API_ENDPOINT = isProd ? 'https://workdash.site' : 'http://127.0.0.1:4200';
 // reminder comment proper
 
@@ -26,7 +26,7 @@ function handleJiraTicketRender(responseData) {
   const jiraTickets = responseData.map((el, index) => {
     const jiraTicketItem = document.createElement('div');
     jiraTicketItem.draggable = 'true';
-    jiraTicketItem.className = 'jira-ticket element rounded';
+    jiraTicketItem.className = 'jira-ticket rounded';
 
     const jiraTicketProjectIcon = document.createElement('img');
     jiraTicketProjectIcon.className = 'jira-ticket-project-img';
@@ -56,8 +56,6 @@ function handleJiraTicketRender(responseData) {
     const jiraIssueType = document.createElement('span');
     jiraIssueType.className = 'jira-issue-type';
     jiraIssueType.innerText = `${el.fields.issuetype.name}`;
-
-    console.log(el.fields.project.name);
 
     //issutype-container
     const jiraIssueTypeContainer = document.createElement('div');
