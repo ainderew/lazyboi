@@ -91,28 +91,30 @@ async function createSpotifyPlayer() {
     });
 
     //Get Image
-    const res = await fetch(
-      'https://api.spotify.com/v1/me/player/currently-playing',
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
+    // const res = await fetch(
+    //   'https://api.spotify.com/v1/me/player/currently-playing',
+    //   {
+    //     method: 'GET',
+    //     headers: {
+    //       Authorization: `Bearer ${token}`,
+    //     },
+    //   },
+    // );
+    // console.log(res);
+    //
+    // if (res.status === 204 || res.status > 400) {
+    //   console.log('Nothing is currently playing');
+    //   return null;
+    // }
+    // const currentTrack = await res.json();
 
-    if (res.status === 204 || res.status > 400) {
-      console.log('Nothing is currently playing');
-      return null;
-    }
-    const currentTrack = await res.json();
-
-    const processedTrackData = processCurrentTrackData(currentTrack.item);
-    const { imageUrl, songTitle, artistName } = processedTrackData;
-    renderCurrentSongImage(imageUrl);
-    renderSongTitle(songTitle);
-    renderArtistName(artistName);
-    renderTogglePlayButton(currentTrack.is_playing);
+    // const processedTrackData = processCurrentTrackData(currentTrack.item);
+    // const { imageUrl, songTitle, artistName } = processedTrackData;
+    // renderCurrentSongImage(imageUrl);
+    // renderSongTitle(songTitle);
+    // renderArtistName(artistName);
+    // console.log('IS PLAYING', player);
+    // renderTogglePlayButton(player);
   });
 
   // Not Ready
@@ -134,14 +136,18 @@ async function createSpotifyPlayer() {
   });
 
   //Track state change
-  player.addListener('player_state_changed', ({ track_window }) => {
+  player.addListener('player_state_changed', async ({ track_window }) => {
     const processedTrackData = processCurrentTrackData(
       track_window.current_track,
     );
     const { imageUrl, songTitle, artistName } = processedTrackData;
+    const { paused } = await player.getCurrentState();
+    console.log('PAUSED', paused);
+
     renderCurrentSongImage(imageUrl);
     renderSongTitle(songTitle);
     renderArtistName(artistName);
+    renderTogglePlayButton(paused);
   });
 
   //Controls events
@@ -153,9 +159,9 @@ async function createSpotifyPlayer() {
     /** state
     paused: boolean, loading: boolean, duration: number, position: number
     **/
-    const state = await player.getCurrentState();
-    console.log('Current state:', state);
-    renderTogglePlayButton(state.paused);
+    // const state = await player.getCurrentState();
+    // console.log('Current state:', state);
+    // renderTogglePlayButton(state.paused);
   };
 
   //Next Song
@@ -167,6 +173,7 @@ async function createSpotifyPlayer() {
   document.querySelector('.btn-control-prev').onclick = async function () {
     await player.previousTrack();
   };
+  player.connect();
 }
 
 (async function initSpotify() {
@@ -193,10 +200,10 @@ function renderArtistName(artistName) {
   artistNameContainer.innerText = artistName;
 }
 
-function renderTogglePlayButton(state) {
+function renderTogglePlayButton(isPaused) {
   const toggleButton = document.querySelector('.music-play-btn');
 
-  if (!state) {
+  if (isPaused) {
     toggleButton.src = './assets/music_controls_svgs/play.svg';
   } else {
     toggleButton.src = './assets/music_controls_svgs/pause.svg';
