@@ -65,7 +65,7 @@ function main() {
 
     app.get('/test-slack', async function (_, res) {
       try {
-        const sent = await slack.sendMessage('In');
+        const sent = await slack.sendMessage('test', 'C03TF5WL5QQ');
         res.send(sent ? 'Slack message sent' : 'Slack message failed');
       } catch (error) {
         console.log(error);

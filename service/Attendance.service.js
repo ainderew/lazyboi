@@ -123,7 +123,7 @@ class AttendanceService {
     const randomMinuteDelay = randomNum * 1000 * 60;
 
     const nextSproutAutomationData = {
-      time: `${mode === 'in' ? '20' : '7'}:${String(randomNum).padStart(2, '0')}`,
+      time: `${mode === 'in' ? '22' : '6'}:${String(randomNum).padStart(2, '0')}`,
       mode: mode,
     };
     config.NEXT_SPROUT_AUTOMATION = nextSproutAutomationData;

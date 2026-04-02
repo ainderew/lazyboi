@@ -63,8 +63,9 @@ class SlackService {
     logger.info('Slack session saved.');
   }
 
-  async sendMessage(text) {
-    if (!SLACK_CHANNEL_ID) {
+  async sendMessage(text, channelId) {
+    const channel = channelId || SLACK_CHANNEL_ID;
+    if (!channel) {
       logger.error('SLACK_CHANNEL_ID is not set — skipping Slack fallback');
       return false;
     }
@@ -114,7 +115,7 @@ class SlackService {
       }
 
       // Navigate to the specific channel using the correct team ID
-      const url = `https://app.slack.com/client/${teamId}/${SLACK_CHANNEL_ID}`;
+      const url = `https://app.slack.com/client/${teamId}/${channel}`;
       logger.info(`[slack] Navigating to channel: ${url}`);
       await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
 
