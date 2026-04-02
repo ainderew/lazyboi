@@ -32,11 +32,15 @@ class SlackService {
     }
   }
 
-  async setupSession() {
+  async setupSession({ headless = false, debugPort = 0 } = {}) {
     this.#cleanLock();
+
+    const args = ['--no-sandbox'];
+    if (debugPort) args.push(`--remote-debugging-port=${debugPort}`);
+
     const browser = await puppeteer.launch({
-      headless: false,
-      args: [],
+      headless: headless ? 'new' : false,
+      args,
       userDataDir: SLACK_USER_DATA_DIR,
       executablePath: CHROME_PATH,
     });

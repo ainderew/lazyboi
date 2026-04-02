@@ -45,8 +45,19 @@ function main() {
 
     app.get('/slack-setup', async function (_, res) {
       try {
-        res.send('Slack browser opened — log in manually, then close the browser window.');
-        await slack.setupSession();
+        const isProd = process.env.IS_PROD === 'true' || process.env.NODE_ENV === 'production';
+        if (isProd) {
+          res.send(
+            'Slack remote debug session started on port 9222.\n' +
+            'Open chrome://inspect in your local browser, click "Configure..." and add the VPS IP:9222.\n' +
+            'Then click "inspect" on the Slack tab to log in.\n' +
+            'Close the browser tab on the VPS when done (hit /slack-setup-close).',
+          );
+          slack.setupSession({ headless: true, debugPort: 9222 });
+        } else {
+          res.send('Slack browser opened — log in manually, then close the browser window.');
+          slack.setupSession();
+        }
       } catch (error) {
         console.log(error);
       }
