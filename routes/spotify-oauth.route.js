@@ -1,7 +1,5 @@
 import express from 'express';
 const router = express.Router();
-import fetch from 'node-fetch';
-
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -21,8 +19,9 @@ var generateRandomString = function (length) {
 };
 
 router.get('/auth/spotify', function (req, res) {
-  var state = generateRandomString(16);
-  var scope =
+  const state = generateRandomString(16);
+  req.session.spotifyState = state;
+  const scope =
     'streaming user-top-read user-read-recently-played user-library-read user-modify-playback-state user-read-private user-read-email user-read-currently-playing user-read-playback-state';
 
   var auth_query_parameters = new URLSearchParams({
@@ -41,7 +40,13 @@ router.get('/auth/spotify', function (req, res) {
 
 router.get('/spotify/callback', async (req, res) => {
   try {
-    const code = req.query.code;
+    const { code, state } = req.query;
+    const storedState = req.session.spotifyState;
+
+    if (!state || state !== storedState) {
+      return res.status(403).send('State mismatch — possible CSRF');
+    }
+    delete req.session.spotifyState;
 
     const params = new URLSearchParams();
     params.append('code', code);
@@ -68,12 +73,13 @@ router.get('/spotify/callback', async (req, res) => {
     }
 
     const body = await response.json();
-    const access_token = body.access_token;
-    req.session.spotifyToken = access_token;
+    req.session.spotifyToken = body.access_token;
+    req.session.spotifyRefreshToken = body.refresh_token;
 
     res.redirect('/');
   } catch (err) {
-    console.log(err);
+    console.error('Spotify OAuth error:', err);
+    res.status(500).send('Spotify authentication failed');
   }
 });
 

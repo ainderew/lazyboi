@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import routes from './routes/index.route.js';
 import startAttendanceCron from './utils/cronManagement.js';
 import AttendanceService from './service/Attendance.service.js';
+import SlackService from './service/Slack.service.js';
 
 /**
  * Main entry point for the server application.
@@ -13,6 +14,7 @@ import AttendanceService from './service/Attendance.service.js';
 function main() {
   const app = express();
   const att = new AttendanceService();
+  const slack = new SlackService();
 
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
@@ -21,7 +23,7 @@ function main() {
     startAttendanceCron();
     app.use(
       session({
-        secret: 'supersecret',
+        secret: process.env.SESSION_SECRET || 'supersecret',
         resave: true,
         saveUninitialized: true,
         cookie: { secure: process.env.NODE_ENV === 'production' },
@@ -31,29 +33,46 @@ function main() {
     app.use('/boom', async function (_, res) {
       res.sendFile(path.join(__dirname, 'public/sproutAutomation.html'));
     });
-    app.use('/test-login', async function (_, res) {
+    app.get('/test-login', async function (_, res) {
       try {
         await att.performAutomatedAttendance('in');
+        res.sendFile(path.join(__dirname, 'public/testing.html'));
       } catch (error) {
         console.log(error);
         res.sendFile(path.join(__dirname, 'public/404.html'));
       }
+    });
 
-      res.sendFile(path.join(__dirname, 'public/testing.html'));
+    app.get('/slack-setup', async function (_, res) {
+      try {
+        res.send('Slack browser opened — log in manually, then close the browser window.');
+        await slack.setupSession();
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+    app.get('/test-slack', async function (_, res) {
+      try {
+        const sent = await slack.sendMessage('In');
+        res.send(sent ? 'Slack message sent' : 'Slack message failed');
+      } catch (error) {
+        console.log(error);
+        res.send('Slack test failed');
+      }
     });
 
     app.get('/test-logout', async function (_, res) {
       try {
         await att.performAutomatedAttendance('out');
+        res.send('TEST LOGOUT ROUTE');
       } catch (error) {
         console.log(error);
         res.sendFile(path.join(__dirname, 'public/404.html'));
       }
-
-      res.send('TEST LOGOUT ROUTE');
     });
 
-    app.use(...routes);
+    routes.forEach((r) => app.use(r));
 
     app.listen(4200, () => {
       console.log('Server Running PORT: 4200');

@@ -15,20 +15,18 @@ async function retryCatch(callback, loginMode, retries, recordKeeping = null) {
         message: `retry function: ${error.message}`,
       });
 
-      if (attempt > retries) {
-        console.error('No more tries - error:', error);
-        logger.error({ message: error.message, stack: error.stack });
-
-        if (recordKeeping) {
-          recordKeeping.writeFailedAttempt(loginMode);
-        }
-
-        return false;
-      }
-
       logger.info(`Retrying... remaining retries: ${retries - attempt}`);
     }
   }
+
+  console.error('No more tries');
+  logger.error({ message: 'All retries exhausted', loginMode });
+
+  if (recordKeeping) {
+    recordKeeping.writeFailedAttempt(loginMode);
+  }
+
+  return false;
 }
 
 export default retryCatch;

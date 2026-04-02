@@ -9,7 +9,8 @@ class JiraController {
 
       res.json(issues);
     } catch (err) {
-      throw new Error(`Error fetching undone tickets: ${err.message}`);
+      console.error(`Error fetching undone tickets: ${err.message}`);
+      res.status(500).json({ error: err.message });
     }
   }
 }

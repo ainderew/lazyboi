@@ -23,7 +23,8 @@ router.get('/auth/google/callback', async (req, res) => {
 
     res.redirect('/boom');
   } catch (err) {
-    console.log(err);
+    console.error('Google OAuth error:', err);
+    res.status(500).send('Google authentication failed');
   }
 });
 

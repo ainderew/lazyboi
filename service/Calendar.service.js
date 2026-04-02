@@ -43,6 +43,7 @@ class CalendarService {
       return res.data.items;
     } catch (err) {
       console.error(err);
+      throw err;
     }
   }
 }

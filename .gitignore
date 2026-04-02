@@ -5,3 +5,5 @@ logs
 .env
 jira-response-example.json
 *.db
+db/slack-session/
+.DS_Store

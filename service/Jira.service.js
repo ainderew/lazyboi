@@ -8,18 +8,17 @@ class JiraService {
 
   async getUnDoneTickets() {
     try {
-      const email = 'pinon@theoriamedical.com';
-      //the value in the .env is generated manually for each individual
-      //TODO: re-design to obtain it from user
+      const email = process.env.JIRA_EMAIL;
       const apiToken = process.env.JIRA_API_KEY;
-      const domain = 'theoriamedical'; // e.g. yourteam.atlassian.net
+      const domain = process.env.JIRA_DOMAIN;
 
       const base64Credentials = Buffer.from(`${email}:${apiToken}`).toString(
         'base64',
       );
 
+      const jql = 'assignee=currentUser() AND statusCategory != Done';
       const response = await fetch(
-        `https://${domain}.atlassian.net/rest/api/3/search?jql=assignee=currentUser() AND statusCategory != Done`,
+        `https://${domain}.atlassian.net/rest/api/3/search?jql=${encodeURIComponent(jql)}`,
         {
           method: 'GET',
           headers: {

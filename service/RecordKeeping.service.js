@@ -27,6 +27,7 @@ class RecordKeeping {
       function (err) {
         if (err) {
           logger.error('WRITE RECORDS ERROR');
+          return;
         }
         console.log('WRITE RECORD SUCCESS - type(normal write)');
       },
@@ -43,6 +44,7 @@ class RecordKeeping {
       function (err) {
         if (err) {
           console.log('WRITE RECORDS ERROR');
+          return;
         }
         console.log('WRITE RECORD SUCCESS - type(failed attempt)');
       },
