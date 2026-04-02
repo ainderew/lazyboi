@@ -1,21 +1,16 @@
 const testH1 = document.querySelector('.log-container');
 
-//TODO: change before pushing
-const isProd = false;
-const API_ENDPOINT = isProd ? 'https://workdash.site' : 'http://localhost:4200';
-// reminder comment proper
-
-fetch(`${API_ENDPOINT}/get-records`)
+fetch(`/get-records`)
   .then((res) => res.json())
   .then((data) => displayRecords(data))
   .catch((err) => console.log(err));
 
-fetch(`${API_ENDPOINT}/check-cron-status`)
+fetch(`/check-cron-status`)
   .then((res) => res.json())
   .then((data) => displayCronStatus(data))
   .catch((err) => console.log(err));
 
-fetch(`${API_ENDPOINT}/check-next-sprout-automation`)
+fetch(`/check-next-sprout-automation`)
   .then((res) => res.json())
   .then((data) => displayNextSproutAutomationTime(data))
   .catch((err) => console.log(err));
