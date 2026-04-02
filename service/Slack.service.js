@@ -36,7 +36,10 @@ class SlackService {
     this.#cleanLock();
 
     const args = ['--no-sandbox'];
-    if (debugPort) args.push(`--remote-debugging-port=${debugPort}`);
+    if (debugPort) {
+      args.push(`--remote-debugging-port=${debugPort}`);
+      args.push('--remote-debugging-address=0.0.0.0');
+    }
 
     const browser = await puppeteer.launch({
       headless: headless ? 'new' : false,
