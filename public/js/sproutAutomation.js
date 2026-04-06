@@ -15,6 +15,8 @@ fetch(`/check-next-sprout-automation`)
   .then((data) => displayNextSproutAutomationTime(data))
   .catch((err) => console.log(err));
 
+startCountdown();
+
 function displayRecords(timelogs) {
   console.log(timelogs);
   testH1.innerHTML = timelogs
@@ -44,6 +46,48 @@ function displayCronStatus(data) {
     : (indicator.innerHTML = `<img class="indicator-img" src="/assets/warning.svg" alt="check mark">`);
   isAutomatedLogsActive ? (statusText.innerText = 'Running') : 'Not Active';
   isAutomatedLogsActive && indicator.classList.add('active');
+}
+
+async function startCountdown() {
+  const countdownEl = document.querySelector('.cron-countdown');
+  const modeEl = document.querySelector('.cron-countdown-mode');
+  let target = null;
+  let mode = null;
+
+  async function refresh() {
+    try {
+      const res = await fetch('/next-cron-fire');
+      const data = await res.json();
+      target = data.nextFire;
+      mode = data.mode;
+      if (modeEl) modeEl.innerText = mode ? mode.toUpperCase() : '—';
+    } catch (err) {
+      console.log('countdown refresh failed', err);
+    }
+  }
+
+  function render() {
+    if (!target) {
+      countdownEl.innerText = '—';
+      return;
+    }
+    const diff = target - Date.now();
+    if (diff <= 0) {
+      countdownEl.innerText = 'Firing now…';
+      refresh();
+      return;
+    }
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    countdownEl.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  }
+
+  await refresh();
+  render();
+  setInterval(render, 1000);
+  // Re-sync with backend every 5 minutes in case of clock drift / schedule changes
+  setInterval(refresh, 5 * 60 * 1000);
 }
 
 function displayNextSproutAutomationTime(data) {
