@@ -770,7 +770,7 @@ body::after {
 
 .bottom {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   background: var(--panel);
   border: var(--hairline-w) solid var(--hairline);
   position: relative;

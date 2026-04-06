@@ -1,5 +1,7 @@
 # lazyboi
 
+Everything stays on your machine. There is no remote DB, no analytics, no telemetry. Records, logs, screenshots, Slack session, and credentials all live in local files (`db/`, `logs/`, `.env`). Nothing leaves the box you run it on.
+
 ## Run it
 
 You'll need Node 20 and Chromium installed somewhere on your machine.
