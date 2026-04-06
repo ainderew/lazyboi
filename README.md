@@ -1,9 +1,5 @@
 # lazyboi
 
-A small Node service that runs scheduled browser-based tasks against a configurable web target, mirrors events to Slack, persists everything to SQLite, and ships with a cockpit-style dashboard for live status.
-
-Built as a personal sandbox for experimenting with Puppeteer scheduling, ambient dashboards, and Slack web automation without third-party app approvals.
-
 ## Features
 
 - **Cron-driven Puppeteer flows** with per-run randomized offsets, configurable via a single file.
