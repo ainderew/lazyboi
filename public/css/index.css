@@ -45,12 +45,16 @@
   --out-color: oklch(0.82 0.16 65);         /* amber orange — clock OUT */
   --out-glow: oklch(0.86 0.18 70);
 
-  /* dynamic — switches based on body[data-mode] */
-  --phosphor: var(--in-color);
-  --phosphor-glow: var(--in-glow);
-  --phosphor-soft: var(--in-color);
+  /* gauge accent — switches based on body[data-mode] */
+  --gauge-phosphor: var(--in-color);
+  --gauge-glow: var(--in-glow);
 
-  --emerald: var(--in-color);
+  /* page accent — fixed neutral, never shifts */
+  --phosphor: oklch(0.78 0.13 75);
+  --phosphor-glow: oklch(0.84 0.15 80);
+  --phosphor-soft: oklch(0.68 0.11 75);
+
+  --emerald: oklch(0.78 0.14 155);
   --crimson: oklch(0.7 0.18 25);
 
   --bezel-inner: oklch(0.155 0.012 58);
@@ -86,11 +90,14 @@
   --out-color: oklch(0.55 0.16 55);
   --out-glow: oklch(0.62 0.18 60);
 
-  --phosphor: var(--in-color);
-  --phosphor-glow: var(--in-glow);
-  --phosphor-soft: var(--in-color);
+  --gauge-phosphor: var(--in-color);
+  --gauge-glow: var(--in-glow);
 
-  --emerald: var(--in-color);
+  --phosphor: oklch(0.52 0.14 70);
+  --phosphor-glow: oklch(0.6 0.16 75);
+  --phosphor-soft: oklch(0.6 0.13 70);
+
+  --emerald: oklch(0.5 0.13 155);
   --crimson: oklch(0.55 0.18 25);
 
   --bezel-inner: oklch(0.96 0.012 78);
@@ -123,10 +130,12 @@
     --in-glow: oklch(0.84 0.18 150);
     --out-color: oklch(0.82 0.16 65);
     --out-glow: oklch(0.86 0.18 70);
-    --phosphor: var(--in-color);
-    --phosphor-glow: var(--in-glow);
-    --phosphor-soft: var(--in-color);
-    --emerald: var(--in-color);
+    --gauge-phosphor: var(--in-color);
+    --gauge-glow: var(--in-glow);
+    --phosphor: oklch(0.78 0.13 75);
+    --phosphor-glow: oklch(0.84 0.15 80);
+    --phosphor-soft: oklch(0.68 0.11 75);
+    --emerald: oklch(0.78 0.14 155);
     --crimson: oklch(0.7 0.18 25);
     --bezel-inner: oklch(0.155 0.012 58);
     --bezel-outer: oklch(0.085 0.01 55);
@@ -138,17 +147,15 @@
   }
 }
 
-/* mode tinting — gauge swaps to whichever side it's counting toward */
+/* mode tinting — gauge only */
 [data-mode='out'] {
-  --phosphor: var(--out-color);
-  --phosphor-glow: var(--out-glow);
-  --phosphor-soft: var(--out-color);
+  --gauge-phosphor: var(--out-color);
+  --gauge-glow: var(--out-glow);
 }
 
 [data-mode='in'] {
-  --phosphor: var(--in-color);
-  --phosphor-glow: var(--in-glow);
-  --phosphor-soft: var(--in-color);
+  --gauge-phosphor: var(--in-color);
+  --gauge-glow: var(--in-glow);
 }
 
 /* ─── base ────────────────────────────────── */
@@ -319,28 +326,32 @@ body::after {
   font-weight: 500;
 }
 
-.hud__cell--theme {
+.hud__cell--toggles {
   padding: 0.6rem 0.85rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
 }
 
-.theme-toggle {
+.toggle-pill {
   appearance: none;
   background: var(--panel-recess);
   border: var(--hairline-w) solid var(--hairline);
   color: var(--ink-soft);
   font-family: var(--font-body);
   font-size: var(--step--2);
+  font-weight: 500;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  padding: 0.5rem 0.9rem;
+  padding: 0.5rem 0.85rem;
   cursor: pointer;
   transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  min-width: 4.4rem;
+  text-align: center;
 }
 
-.theme-toggle:hover {
+.toggle-pill:hover {
   border-color: var(--phosphor);
   color: var(--phosphor);
   text-shadow: 0 0 6px color-mix(in oklch, var(--phosphor-glow) 50%, transparent);
@@ -460,12 +471,13 @@ body::after {
   background:
     radial-gradient(
       ellipse 70% 80% at 30% 50%,
-      color-mix(in oklch, var(--phosphor) 5%, transparent) 0%,
+      color-mix(in oklch, var(--gauge-phosphor) 6%, transparent) 0%,
       transparent 70%
     ),
     var(--panel);
   position: relative;
   z-index: 1;
+  transition: background 0.6s ease;
 }
 
 @media (max-width: 580px) {
@@ -481,17 +493,24 @@ body::after {
   filter: drop-shadow(0 8px 24px color-mix(in oklch, black 30%, transparent));
 }
 
-.gauge__progress {
-  transition: stroke-dasharray 1.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
 .gauge__elapsed {
   transition: stroke-dasharray 1.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .gauge__needle {
-  transition: transform 1.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-  filter: drop-shadow(0 0 5px color-mix(in oklch, var(--phosphor-glow) 60%, transparent));
+  transition: transform 1.6s cubic-bezier(0.2, 0.8, 0.2, 1), stroke 0.6s ease;
+  stroke: var(--gauge-phosphor);
+  filter: drop-shadow(0 0 5px color-mix(in oklch, var(--gauge-glow) 60%, transparent));
+}
+
+.gauge__progress {
+  stroke: var(--gauge-phosphor);
+  transition: stroke-dasharray 1.6s cubic-bezier(0.2, 0.8, 0.2, 1), stroke 0.6s ease;
+}
+
+.gauge__center {
+  fill: var(--gauge-phosphor);
+  transition: fill 0.6s ease;
 }
 
 /* tick marks (added by JS) */
@@ -537,12 +556,13 @@ body::after {
   font-weight: 700;
   font-size: var(--step-4);
   line-height: 0.85;
-  color: var(--phosphor);
+  color: var(--gauge-phosphor);
   letter-spacing: 0.02em;
   text-transform: uppercase;
   text-shadow:
-    0 0 12px color-mix(in oklch, var(--phosphor-glow) 60%, transparent),
-    0 0 28px color-mix(in oklch, var(--phosphor-glow) 25%, transparent);
+    0 0 12px color-mix(in oklch, var(--gauge-glow) 60%, transparent),
+    0 0 28px color-mix(in oklch, var(--gauge-glow) 25%, transparent);
+  transition: color 0.6s ease, text-shadow 0.6s ease;
 }
 
 .readout__eta {
@@ -580,9 +600,10 @@ body::after {
   width: 0.4rem;
   height: 0.4rem;
   border-radius: 50%;
-  background: var(--phosphor);
-  box-shadow: 0 0 8px color-mix(in oklch, var(--phosphor-glow) 70%, transparent);
+  background: var(--gauge-phosphor);
+  box-shadow: 0 0 8px color-mix(in oklch, var(--gauge-glow) 70%, transparent);
   animation: led-pulse 1.4s ease-in-out infinite;
+  transition: background 0.6s ease, box-shadow 0.6s ease;
 }
 
 /* ─── telemetry stack ─────────────────────── */

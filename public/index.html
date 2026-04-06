@@ -48,14 +48,22 @@
           <span class="hud__value tabular" data-now>—:—:—</span>
         </div>
 
-        <div class="hud__cell hud__cell--theme">
+        <div class="hud__cell hud__cell--toggles">
           <button
-            class="theme-toggle"
+            class="toggle-pill"
+            type="button"
+            aria-label="Cycle clock format"
+            data-clock-toggle
+          >
+            <span class="toggle-pill__label" data-clock-label>24h</span>
+          </button>
+          <button
+            class="toggle-pill"
             type="button"
             aria-label="Cycle theme"
             data-theme-toggle
           >
-            <span class="theme-toggle__label" data-theme-label>auto</span>
+            <span class="toggle-pill__label" data-theme-label>auto</span>
           </button>
         </div>
       </header>
@@ -164,7 +172,7 @@
                 transform-origin="210 210"
                 transform="rotate(0)"
               />
-              <circle cx="210" cy="210" r="6" fill="var(--phosphor)" />
+              <circle class="gauge__center" cx="210" cy="210" r="6" />
               <circle cx="210" cy="210" r="2.5" fill="var(--bezel-inner)" />
             </svg>
 

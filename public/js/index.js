@@ -33,18 +33,57 @@ function cycleTheme() {
 applyTheme(currentTheme());
 themeBtn?.addEventListener('click', cycleTheme);
 
+// ─── clock format (24h ↔ 12h) ─────────────
+const clockBtn = document.querySelector('[data-clock-toggle]');
+const clockLabel = document.querySelector('[data-clock-label]');
+
+function currentClockFormat() {
+  return localStorage.getItem('clock-format') === '12h' ? '12h' : '24h';
+}
+
+function applyClockFormat(fmt) {
+  localStorage.setItem('clock-format', fmt);
+  if (clockLabel) clockLabel.textContent = fmt;
+  // Re-render any clock-dependent UI
+  refreshAllTimes();
+}
+
+function cycleClockFormat() {
+  applyClockFormat(currentClockFormat() === '24h' ? '12h' : '24h');
+}
+
+if (clockLabel) clockLabel.textContent = currentClockFormat();
+clockBtn?.addEventListener('click', cycleClockFormat);
+
+const is12h = () => currentClockFormat() === '12h';
+
 // ─── data fetches ──────────────────────────
 const api = (p) => fetch(p).then((r) => r.json());
+
+let cachedRecords = null;
+let cachedNext = null;
 
 Promise.allSettled([
   api('/get-records'),
   api('/check-cron-status'),
   api('/next-cron-fire'),
 ]).then(([records, cron, next]) => {
-  if (records.status === 'fulfilled') renderLog(records.value);
+  if (records.status === 'fulfilled') {
+    cachedRecords = records.value;
+    renderLog(cachedRecords);
+  }
   if (cron.status === 'fulfilled') renderCronState(cron.value);
-  if (next.status === 'fulfilled') startGauge(next.value);
+  if (next.status === 'fulfilled') {
+    cachedNext = next.value;
+    startGauge(cachedNext);
+  }
 });
+
+function refreshAllTimes() {
+  if (cachedRecords) renderLog(cachedRecords);
+  if (cachedNext && cachedNext.nextFire) updateGaugeReadout();
+  tickClock();
+}
 
 // ─── gauge: ticks ──────────────────────────
 function buildTicks() {
@@ -70,7 +109,6 @@ function buildTicks() {
     );
   }
 
-  // Hour labels at 12 / 3 / 6 / 9 (0, 6, 12, 18 in our 24h gauge)
   const labels = [
     { hr: 0, label: '24' },
     { hr: 6, label: '06' },
@@ -91,8 +129,9 @@ function buildTicks() {
 buildTicks();
 
 // ─── gauge: live needle + arcs ─────────────
+let gaugeTickFn = null;
+
 function startGauge({ nextFire, mode }) {
-  const arc = document.querySelector('.gauge__progress');
   const arcs = document.querySelectorAll('.gauge__progress');
   const elapsed = document.querySelector('.gauge__elapsed');
   const needle = document.querySelector('.gauge__needle');
@@ -113,35 +152,29 @@ function startGauge({ nextFire, mode }) {
   const ONE_DAY = 24 * 60 * 60 * 1000;
   const prev = nextFire - ONE_DAY;
 
-  if (windowEl) {
-    windowEl.textContent = `window: ${formatManila(prev)} → ${formatManila(nextFire)}`;
-  }
-
   function tick() {
     const now = Date.now();
     let t = (now - prev) / ONE_DAY;
     t = Math.max(0, Math.min(1, t));
 
-    // Progress arc — fills clockwise from 12 o'clock
     arcs.forEach((el) => el.setAttribute('stroke-dasharray', `${t} ${1 - t}`));
-
-    // Elapsed (faint) draws the same range slightly behind for depth
     elapsed.setAttribute('stroke-dasharray', `${t} ${1 - t}`);
 
-    // Needle: 0..1 → 0..360°
     const deg = t * 360;
     needle.setAttribute('transform', `rotate(${deg.toFixed(2)})`);
 
-    // ETA readout
     const diff = nextFire - now;
     etaEl.textContent = formatEta(diff);
     preciseEl.textContent = formatPrecise(nextFire);
+    if (windowEl) {
+      windowEl.textContent = `window: ${formatManila(prev)} → ${formatManila(nextFire)}`;
+    }
   }
 
+  gaugeTickFn = tick;
   tick();
   setInterval(tick, 1000);
 
-  // Re-sync every 5 minutes
   setInterval(async () => {
     try {
       const fresh = await api('/next-cron-fire');
@@ -150,6 +183,10 @@ function startGauge({ nextFire, mode }) {
       }
     } catch {}
   }, 5 * 60 * 1000);
+}
+
+function updateGaugeReadout() {
+  if (gaugeTickFn) gaugeTickFn();
 }
 
 function formatEta(ms) {
@@ -169,12 +206,14 @@ function pad(n) {
 
 function formatManila(utcMs) {
   const d = new Date(utcMs);
-  return d.toLocaleString('en-US', {
-    timeZone: 'Asia/Manila',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: false,
-  });
+  return d
+    .toLocaleString('en-US', {
+      timeZone: 'Asia/Manila',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: is12h(),
+    })
+    .toLowerCase();
 }
 
 function formatPrecise(utcMs) {
@@ -185,9 +224,9 @@ function formatPrecise(utcMs) {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
-      hour: '2-digit',
+      hour: is12h() ? 'numeric' : '2-digit',
       minute: '2-digit',
-      hour12: false,
+      hour12: is12h(),
     })
     .toLowerCase();
 }
@@ -260,9 +299,9 @@ function formatLogTime(raw) {
       timeZone: 'Asia/Manila',
       month: 'short',
       day: '2-digit',
-      hour: '2-digit',
+      hour: is12h() ? 'numeric' : '2-digit',
       minute: '2-digit',
-      hour12: false,
+      hour12: is12h(),
     })
     .toLowerCase()
     .replace(',', '');
@@ -297,10 +336,10 @@ function tickClock() {
   el.textContent = d
     .toLocaleString('en-US', {
       timeZone: 'Asia/Manila',
-      hour: '2-digit',
+      hour: is12h() ? 'numeric' : '2-digit',
       minute: '2-digit',
       second: '2-digit',
-      hour12: false,
+      hour12: is12h(),
     })
     .toLowerCase();
 }
