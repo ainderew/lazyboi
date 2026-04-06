@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <script>
@@ -20,58 +20,86 @@
     </script>
   </head>
   <body>
-    <div class="page">
-      <header class="masthead">
-        <span class="masthead__name">lazyboi</span>
-        <span class="masthead__rule" aria-hidden="true"></span>
-        <span class="masthead__date" data-today>—</span>
-        <span class="masthead__rule" aria-hidden="true"></span>
-        <span class="masthead__clock tabular" data-now>—:—</span>
-
-        <nav class="masthead__nav">
-          <button class="link" type="button" data-clock-toggle>
-            <span data-clock-label>24h</span>
-          </button>
-          <button class="link" type="button" data-theme-toggle>
-            <span data-theme-label>auto</span>
-          </button>
-        </nav>
+    <main class="page">
+      <header class="top">
+        <div class="top__brand">
+          <span class="top__mark" aria-hidden="true"></span>
+          <span class="top__name">lazyboi</span>
+        </div>
+        <button class="top__theme" type="button" data-theme-toggle>
+          <span data-theme-label>auto</span>
+        </button>
       </header>
 
-      <section class="lede">
-        <p class="lede__kicker" data-status-kicker>quality check</p>
-        <h1 class="lede__headline" data-headline>
-          <span class="lede__placeholder">listening for telemetry</span>
-        </h1>
-        <p class="lede__sub" data-subline></p>
+      <section class="hero" data-hero>
+        <div class="hero__top">
+          <span class="hero__badge">
+            <span class="dot" aria-hidden="true"></span>
+            <span data-hero-badge>checking</span>
+          </span>
+          <span class="hero__sync tabular" data-sync>—</span>
+        </div>
+        <h1 class="hero__line" data-hero-line>checking…</h1>
+        <p class="hero__sub" data-hero-sub>—</p>
+
+        <div class="countdown" data-countdown hidden>
+          <div class="countdown__head">
+            <span class="countdown__label">next run in</span>
+            <span class="countdown__when" data-cd-when>—</span>
+          </div>
+          <div class="countdown__time tabular" data-cd-time>—:—:—</div>
+          <div class="countdown__bar" aria-hidden="true">
+            <div class="countdown__fill" data-cd-fill style="--p: 0%"></div>
+          </div>
+        </div>
       </section>
 
-      <section class="next">
-        <p class="meta">next fire</p>
-        <p class="next__line">
-          <span class="next__when tabular" data-next-when>—</span>
-          <span class="next__sep">·</span>
-          <span class="next__what" data-next-what>—</span>
-        </p>
-        <p class="next__hint" data-next-hint></p>
+      <section class="cards">
+        <article class="card" data-track="in">
+          <header class="card__head">
+            <h2 class="card__name">clock in</h2>
+            <span class="card__pip" data-pip></span>
+          </header>
+          <p class="card__status" data-status>—</p>
+          <dl class="card__meta">
+            <div><dt>last</dt><dd data-last>—</dd></div>
+            <div><dt>next</dt><dd data-next>—</dd></div>
+          </dl>
+          <div class="spark" data-spark aria-label="last 14 runs"></div>
+        </article>
+
+        <article class="card" data-track="out">
+          <header class="card__head">
+            <h2 class="card__name">clock out</h2>
+            <span class="card__pip" data-pip></span>
+          </header>
+          <p class="card__status" data-status>—</p>
+          <dl class="card__meta">
+            <div><dt>last</dt><dd data-last>—</dd></div>
+            <div><dt>next</dt><dd data-next>—</dd></div>
+          </dl>
+          <div class="spark" data-spark aria-label="last 14 runs"></div>
+        </article>
       </section>
 
-      <section class="record">
-        <header class="record__head">
-          <p class="meta">recent activity</p>
-          <p class="record__count"><span data-record-count>—</span> entries</p>
+      <section class="recent">
+        <header class="recent__head">
+          <h2>recent runs</h2>
+          <button class="recent__refresh" type="button" data-refresh>
+            <span class="recent__refresh-icon" aria-hidden="true">↻</span>
+            <span>refresh</span>
+          </button>
         </header>
-
-        <ol class="record__list" data-ledger>
-          <li class="record__placeholder">no entries on record</li>
+        <ol class="recent__list" data-list>
+          <li class="recent__empty">no runs yet</li>
         </ol>
       </section>
 
-      <footer class="colophon">
-        <p>everything stays on this machine. sqlite for records, files for logs and screenshots. no remote db, no analytics.</p>
-        <p class="colophon__build">v0.0.4 · beta</p>
+      <footer class="foot">
+        <span>local only · sqlite</span>
+        <span class="tabular" data-mnl>—</span>
       </footer>
-    </div>
+    </main>
 
     <script type="module" src="/js/index.js"></script>
   </body>
