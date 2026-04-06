@@ -1,22 +1,13 @@
-/**
- * Returns the next scheduled cron fire time as a UTC epoch ms.
- * Schedule (Asia/Manila, UTC+8, no DST):
- *  - In:  21:00 Mon-Fri
- *  - Out: 06:00 Tue-Sat
- */
 const MANILA_OFFSET_MS = 8 * 60 * 60 * 1000;
 
 function nextCronFire(_, res) {
-  const nowUtc = Date.now();
-  // Shift "now" into Manila wall-clock so we can reason in local time
-  const nowManila = new Date(nowUtc + MANILA_OFFSET_MS);
-
+  const nowManila = new Date(Date.now() + MANILA_OFFSET_MS);
   const candidates = [];
 
   for (let dayOffset = 0; dayOffset < 8; dayOffset++) {
     const day = new Date(nowManila);
     day.setUTCDate(nowManila.getUTCDate() + dayOffset);
-    const dow = day.getUTCDay(); // 0=Sun ... 6=Sat
+    const dow = day.getUTCDay();
 
     const makeTarget = (hour) => {
       const t = new Date(day);
@@ -46,11 +37,8 @@ function nextCronFire(_, res) {
     return res.json({ nextFire: null, mode: null });
   }
 
-  // Shift Manila wall-clock time back to real UTC epoch
-  const nextFireUtc = next.manilaTime.getTime() - MANILA_OFFSET_MS;
-
   res.json({
-    nextFire: nextFireUtc,
+    nextFire: next.manilaTime.getTime() - MANILA_OFFSET_MS,
     mode: next.mode,
   });
 }

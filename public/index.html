@@ -22,7 +22,6 @@
   </head>
   <body>
     <main class="console">
-      <!-- ───────── HUD strip (status panel) ───────── -->
       <header class="hud">
         <div class="hud__cell hud__cell--brand">
           <span class="hud__corner" aria-hidden="true">┌</span>
@@ -68,7 +67,6 @@
         </div>
       </header>
 
-      <!-- ───────── instrument cluster ───────── -->
       <section class="cluster">
         <article class="instrument" data-instrument>
           <header class="instrument__head">
@@ -93,7 +91,6 @@
                 </filter>
               </defs>
 
-              <!-- outer bezel -->
               <circle cx="210" cy="210" r="200" fill="url(#bezel)" />
               <circle
                 cx="210"
@@ -112,10 +109,8 @@
                 stroke-width="1"
               />
 
-              <!-- ticks -->
               <g class="gauge__ticks" data-gauge-ticks></g>
 
-              <!-- elapsed arc (faint) -->
               <circle
                 class="gauge__elapsed"
                 cx="210"
@@ -130,7 +125,6 @@
                 transform="rotate(-90 210 210)"
               />
 
-              <!-- progress arc (phosphor) -->
               <circle
                 class="gauge__progress"
                 cx="210"
@@ -159,7 +153,6 @@
                 transform="rotate(-90 210 210)"
               />
 
-              <!-- needle -->
               <line
                 class="gauge__needle"
                 x1="210"
@@ -191,7 +184,6 @@
           </footer>
         </article>
 
-        <!-- ───────── telemetry stack ───────── -->
         <aside class="telemetry">
           <header class="telemetry__head">
             <span class="telemetry__label">telemetry</span>
@@ -238,7 +230,6 @@
         </aside>
       </section>
 
-      <!-- ───────── mission log ───────── -->
       <section class="log">
         <header class="log__head">
           <span class="log__label">mission log · last 20</span>

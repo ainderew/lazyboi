@@ -19,17 +19,11 @@ const CHROME_PATH =
     : '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 
 class SlackService {
-  /**
-   * Opens a visible browser so the user can manually log into Slack once.
-   * The session is saved to disk and reused for future automated messages.
-   */
   #cleanLock() {
     const lockPath = path.join(SLACK_USER_DATA_DIR, 'SingletonLock');
     try {
       fs.unlinkSync(lockPath);
-    } catch {
-      // Lock doesn't exist, that's fine
-    }
+    } catch {}
   }
 
   async setupSession({ headless = false, debugPort = 0 } = {}) {
@@ -100,11 +94,9 @@ class SlackService {
       page.setDefaultNavigationTimeout(NAV_TIMEOUT);
       page.setDefaultTimeout(NAV_TIMEOUT);
 
-      // Go through workspace URL first so session cookies are recognized
       logger.info('[slack] Navigating to workspace...');
       await page.goto('https://theoriamedical.slack.com', { waitUntil: 'networkidle2', timeout: 60000 });
 
-      // Extract team ID from the redirect URL
       const redirectUrl = page.url();
       logger.info(`[slack] After workspace redirect — URL: ${redirectUrl}`);
       const teamIdMatch = redirectUrl.match(/\/client\/([A-Z0-9]+)\//);
@@ -114,7 +106,6 @@ class SlackService {
         throw new Error(`Slack session expired — could not extract team ID from: ${redirectUrl}`);
       }
 
-      // Navigate to the specific channel using the correct team ID
       const url = `https://app.slack.com/client/${teamId}/${channel}`;
       logger.info(`[slack] Navigating to channel: ${url}`);
       await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
@@ -123,16 +114,13 @@ class SlackService {
       const title = await page.title();
       logger.info(`[slack] Page loaded — URL: ${currentUrl}, Title: ${title}`);
 
-      // Screenshot after page load
       const screenshotPath = path.join(__dirname, '..', 'logs', 'screenshots', 'slack-debug.png');
       await page.screenshot({ path: screenshotPath, fullPage: true });
       logger.info(`[slack] Screenshot saved: ${screenshotPath}`);
 
-      // Log what's on the page
       const bodyText = await page.evaluate(() => document.body?.innerText?.substring(0, 500));
       logger.info(`[slack] Page body (first 500 chars): ${bodyText}`);
 
-      // Check if we're logged in by waiting for the message input
       logger.info('[slack] Waiting for message input selector...');
       const messageInput = await page.waitForSelector(
         '[data-qa="message_input"] .ql-editor',

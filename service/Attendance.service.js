@@ -61,7 +61,6 @@ class AttendanceService {
         waitUntil: 'networkidle2',
       });
 
-      // --- Login ---
       await page.waitForSelector('#username', { visible: true });
       await page.type('#username', 'apiñon', { delay: 200 });
       await page.type('#password', process.env.PASS, { delay: 200 });
@@ -71,7 +70,6 @@ class AttendanceService {
         page.click('#kc-login'),
       ]);
 
-      // Verify login succeeded — dashboard should have the clock button
       const clockInOrOutButton = await page.waitForSelector(
         '::-p-xpath(//*[text()=\'Clock In/Out\'])',
         { visible: true, timeout: NAV_TIMEOUT },
@@ -82,7 +80,6 @@ class AttendanceService {
         throw new Error('Login failed — Clock In/Out button not found after navigation');
       }
 
-      // --- Clock In/Out flow ---
       await clockInOrOutButton.click();
 
       const clockActionText = mode === LOGIN_MODE.out ? 'Clock Out' : 'Clock In';
@@ -101,7 +98,6 @@ class AttendanceService {
       await page.waitForSelector('.btn.our-button', { visible: true });
       await page.click('.btn.our-button');
 
-      // Wait for confirmation — give the server time to process
       await new Promise((resolve) => setTimeout(resolve, 5000));
 
       this.recordKeeping.writeRecord(mode);
@@ -134,7 +130,6 @@ class AttendanceService {
 
     await sleep(randomMinuteDelay);
 
-    // Run Sprout login and Slack message in parallel
     const sproutPromise = this.#performSproutWithRetries(mode, NUMBER_OF_RETRIES, MAX_HOURLY_RETRIES, ONE_HOUR_IN_MS);
     const slackPromise = this.#sendSlackMessage(mode);
 

@@ -1,9 +1,3 @@
-/* ─────────────────────────────────────────────
-   lazyboi · console
-   warm phosphor cockpit instrument cluster
-   ───────────────────────────────────────────── */
-
-// ─── theme cycle (auto → light → dark) ────
 const themeBtn = document.querySelector('[data-theme-toggle]');
 const themeLabel = document.querySelector('[data-theme-label]');
 
@@ -33,7 +27,6 @@ function cycleTheme() {
 applyTheme(currentTheme());
 themeBtn?.addEventListener('click', cycleTheme);
 
-// ─── clock format (24h ↔ 12h) ─────────────
 const clockBtn = document.querySelector('[data-clock-toggle]');
 const clockLabel = document.querySelector('[data-clock-label]');
 
@@ -44,7 +37,6 @@ function currentClockFormat() {
 function applyClockFormat(fmt) {
   localStorage.setItem('clock-format', fmt);
   if (clockLabel) clockLabel.textContent = fmt;
-  // Re-render any clock-dependent UI
   refreshAllTimes();
 }
 
@@ -57,7 +49,6 @@ clockBtn?.addEventListener('click', cycleClockFormat);
 
 const is12h = () => currentClockFormat() === '12h';
 
-// ─── data fetches ──────────────────────────
 const api = (p) => fetch(p).then((r) => r.json());
 
 let cachedRecords = null;
@@ -85,7 +76,6 @@ function refreshAllTimes() {
   tickClock();
 }
 
-// ─── gauge: ticks ──────────────────────────
 function buildTicks() {
   const g = document.querySelector('[data-gauge-ticks]');
   if (!g) return;
@@ -128,7 +118,6 @@ function buildTicks() {
 }
 buildTicks();
 
-// ─── gauge: live needle + arcs ─────────────
 let gaugeTickFn = null;
 
 function startGauge({ nextFire, mode }) {
@@ -231,7 +220,6 @@ function formatPrecise(utcMs) {
     .toLowerCase();
 }
 
-// ─── telemetry: cron state ─────────────────
 function renderCronState(data) {
   const stateEl = document.querySelector('[data-cron-state]');
   const stateLed = document.querySelector('[data-cron-led]');
@@ -247,7 +235,6 @@ function renderCronState(data) {
   if (sysLed) sysLed.classList.toggle('led--ok', ok);
 }
 
-// ─── mission log ───────────────────────────
 function renderLog(records) {
   const list = document.querySelector('[data-ledger]');
   const count = document.querySelector('[data-ledger-count]');
@@ -328,7 +315,6 @@ function relativeTime(raw) {
   return `t−${day}d ${pad(hr % 24)}h`;
 }
 
-// ─── live HUD clock ────────────────────────
 function tickClock() {
   const el = document.querySelector('[data-now]');
   if (!el) return;
