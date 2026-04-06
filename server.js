@@ -30,9 +30,6 @@ function main() {
       }),
     );
     app.use('/', express.static(path.join(__dirname, 'public')));
-    app.use('/boom', async function (_, res) {
-      res.sendFile(path.join(__dirname, 'public/sproutAutomation.html'));
-    });
     app.get('/test-login', async function (_, res) {
       try {
         await att.performAutomatedAttendance('in');
