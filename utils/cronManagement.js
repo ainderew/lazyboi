@@ -5,7 +5,7 @@ const attendanceService = new AttendanceService();
 
 // keep in memory record of cron schedules
 const CRON_SCHEDULES = {
-  timeInTime: '0 22 * * 1-5',
+  timeInTime: '0 21 * * 1-5',
   timeOutTime: '0 6 * * 2-6',
 };
 
