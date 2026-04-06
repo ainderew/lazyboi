@@ -3,272 +3,75 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>lazyboi · console</title>
+    <title>lazyboi</title>
     <link rel="stylesheet" href="/css/index.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@300..900&family=Space+Grotesk:wght@300..700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
     <script>
       (function () {
         const stored = localStorage.getItem('theme');
         const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const theme = stored || (sysDark ? 'dark' : 'light');
-        document.documentElement.dataset.theme = theme;
+        document.documentElement.dataset.theme = stored || (sysDark ? 'dark' : 'light');
       })();
     </script>
   </head>
   <body>
-    <main class="console">
-      <header class="hud">
-        <div class="hud__cell hud__cell--brand">
-          <span class="hud__corner" aria-hidden="true">┌</span>
-          <span class="hud__brand">lazyboi</span>
-          <span class="hud__brand-sub">/console.v04</span>
-        </div>
+    <div class="page">
+      <header class="masthead">
+        <span class="masthead__name">lazyboi</span>
+        <span class="masthead__rule" aria-hidden="true"></span>
+        <span class="masthead__date" data-today>—</span>
+        <span class="masthead__rule" aria-hidden="true"></span>
+        <span class="masthead__clock tabular" data-now>—:—</span>
 
-        <div class="hud__cell">
-          <span class="hud__label">sys</span>
-          <span class="hud__value">
-            <span class="led" data-system-led></span>
-            <span data-system-state>checking</span>
-          </span>
-        </div>
-
-        <div class="hud__cell">
-          <span class="hud__label">tz</span>
-          <span class="hud__value">manila / utc+08</span>
-        </div>
-
-        <div class="hud__cell">
-          <span class="hud__label">clock</span>
-          <span class="hud__value tabular" data-now>—:—:—</span>
-        </div>
-
-        <div class="hud__cell hud__cell--toggles">
-          <button
-            class="toggle-pill"
-            type="button"
-            aria-label="Cycle clock format"
-            data-clock-toggle
-          >
-            <span class="toggle-pill__label" data-clock-label>24h</span>
+        <nav class="masthead__nav">
+          <button class="link" type="button" data-clock-toggle>
+            <span data-clock-label>24h</span>
           </button>
-          <button
-            class="toggle-pill"
-            type="button"
-            aria-label="Cycle theme"
-            data-theme-toggle
-          >
-            <span class="toggle-pill__label" data-theme-label>auto</span>
+          <button class="link" type="button" data-theme-toggle>
+            <span data-theme-label>auto</span>
           </button>
-        </div>
+        </nav>
       </header>
 
-      <section class="cluster">
-        <article class="instrument" data-instrument>
-          <header class="instrument__head">
-            <span class="instrument__label">primary instrument · sched gauge</span>
-            <span class="instrument__id">i—01</span>
-          </header>
-
-          <div class="instrument__face">
-            <svg
-              class="gauge"
-              viewBox="0 0 420 420"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-            >
-              <defs>
-                <radialGradient id="bezel" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="var(--bezel-inner)" />
-                  <stop offset="100%" stop-color="var(--bezel-outer)" />
-                </radialGradient>
-                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                  <feGaussianBlur stdDeviation="3.5" />
-                </filter>
-              </defs>
-
-              <circle cx="210" cy="210" r="200" fill="url(#bezel)" />
-              <circle
-                cx="210"
-                cy="210"
-                r="200"
-                fill="none"
-                stroke="var(--bezel-rim)"
-                stroke-width="1"
-              />
-              <circle
-                cx="210"
-                cy="210"
-                r="186"
-                fill="none"
-                stroke="var(--bezel-inset)"
-                stroke-width="1"
-              />
-
-              <g class="gauge__ticks" data-gauge-ticks></g>
-
-              <circle
-                class="gauge__elapsed"
-                cx="210"
-                cy="210"
-                r="160"
-                fill="none"
-                stroke="var(--gauge-elapsed)"
-                stroke-width="2"
-                stroke-linecap="butt"
-                pathLength="1"
-                stroke-dasharray="0 1"
-                transform="rotate(-90 210 210)"
-              />
-
-              <circle
-                class="gauge__progress"
-                cx="210"
-                cy="210"
-                r="160"
-                fill="none"
-                stroke="var(--phosphor)"
-                stroke-width="2.5"
-                stroke-linecap="butt"
-                pathLength="1"
-                stroke-dasharray="0 1"
-                transform="rotate(-90 210 210)"
-                filter="url(#glow)"
-              />
-              <circle
-                class="gauge__progress"
-                cx="210"
-                cy="210"
-                r="160"
-                fill="none"
-                stroke="var(--phosphor)"
-                stroke-width="1.5"
-                stroke-linecap="butt"
-                pathLength="1"
-                stroke-dasharray="0 1"
-                transform="rotate(-90 210 210)"
-              />
-
-              <line
-                class="gauge__needle"
-                x1="210"
-                y1="210"
-                x2="210"
-                y2="58"
-                stroke="var(--phosphor)"
-                stroke-width="2"
-                stroke-linecap="round"
-                transform-origin="210 210"
-                transform="rotate(0)"
-              />
-              <circle class="gauge__center" cx="210" cy="210" r="6" />
-              <circle cx="210" cy="210" r="2.5" fill="var(--bezel-inner)" />
-            </svg>
-
-            <div class="instrument__readout">
-              <span class="readout__label">mode</span>
-              <span class="readout__mode" data-mode-display>—</span>
-              <span class="readout__label">eta</span>
-              <span class="readout__eta tabular" data-eta-display>—h —m</span>
-              <span class="readout__sub" data-eta-precise>—</span>
-            </div>
-          </div>
-
-          <footer class="instrument__foot">
-            <span data-mode-window>window: —</span>
-            <span class="instrument__pulse"></span>
-          </footer>
-        </article>
-
-        <aside class="telemetry">
-          <header class="telemetry__head">
-            <span class="telemetry__label">telemetry</span>
-            <span class="telemetry__id">t—01</span>
-          </header>
-
-          <div class="telemetry__grid">
-            <div class="cell">
-              <span class="cell__label">automation</span>
-              <span class="cell__value">
-                <span class="led led--lg" data-cron-led></span>
-                <span data-cron-state>—</span>
-              </span>
-            </div>
-
-            <div class="cell">
-              <span class="cell__label">drift window</span>
-              <span class="cell__value">+ 00 → 30 min</span>
-              <span class="cell__sub">randomized · per fire</span>
-            </div>
-
-            <div class="cell">
-              <span class="cell__label">clock-in window</span>
-              <span class="cell__value tabular">21:00</span>
-              <span class="cell__sub">mon · tue · wed · thu · fri</span>
-            </div>
-
-            <div class="cell">
-              <span class="cell__label">clock-out window</span>
-              <span class="cell__value tabular">06:00</span>
-              <span class="cell__sub">tue · wed · thu · fri · sat</span>
-            </div>
-
-            <div class="cell">
-              <span class="cell__label">last fire</span>
-              <span class="cell__value" data-last-tended>—</span>
-            </div>
-
-            <div class="cell">
-              <span class="cell__label">total entries</span>
-              <span class="cell__value tabular" data-ledger-count>—</span>
-            </div>
-          </div>
-        </aside>
+      <section class="lede">
+        <p class="lede__kicker" data-status-kicker>quality check</p>
+        <h1 class="lede__headline" data-headline>
+          <span class="lede__placeholder">listening for telemetry</span>
+        </h1>
+        <p class="lede__sub" data-subline></p>
       </section>
 
-      <section class="log">
-        <header class="log__head">
-          <span class="log__label">mission log · last 20</span>
-          <span class="log__id">l—01</span>
+      <section class="next">
+        <p class="meta">next fire</p>
+        <p class="next__line">
+          <span class="next__when tabular" data-next-when>—</span>
+          <span class="next__sep">·</span>
+          <span class="next__what" data-next-what>—</span>
+        </p>
+        <p class="next__hint" data-next-hint></p>
+      </section>
+
+      <section class="record">
+        <header class="record__head">
+          <p class="meta">recent activity</p>
+          <p class="record__count"><span data-record-count>—</span> entries</p>
         </header>
 
-        <div class="log__legend">
-          <span><span class="led led--ok"></span>nominal</span>
-          <span><span class="led led--err"></span>fault</span>
-          <span class="log__legend-rule"></span>
-          <span>↓ newest first</span>
-        </div>
-
-        <ol class="log__list" data-ledger>
-          <li class="log__row log__row--placeholder">
-            <span>┄ awaiting telemetry ┄</span>
-          </li>
+        <ol class="record__list" data-ledger>
+          <li class="record__placeholder">no entries on record</li>
         </ol>
       </section>
 
-      <footer class="bottom">
-        <span class="bottom__cell">
-          <span class="bottom__label">node</span>
-          <span class="bottom__val">vps · 194.233.79.158</span>
-        </span>
-        <span class="bottom__cell">
-          <span class="bottom__label">runtime</span>
-          <span class="bottom__val">node · pm2 · puppeteer</span>
-        </span>
-        <span class="bottom__cell">
-          <span class="bottom__label">storage</span>
-          <span class="bottom__val">local · sqlite · no remote</span>
-        </span>
-        <span class="bottom__cell">
-          <span class="bottom__label">build</span>
-          <span class="bottom__val">v0.0.4 · beta</span>
-        </span>
+      <footer class="colophon">
+        <p>everything stays on this machine. sqlite for records, files for logs and screenshots. no remote db, no analytics.</p>
+        <p class="colophon__build">v0.0.4 · beta</p>
       </footer>
-    </main>
+    </div>
 
     <script type="module" src="/js/index.js"></script>
   </body>

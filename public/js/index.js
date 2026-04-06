@@ -1,5 +1,7 @@
 const themeBtn = document.querySelector('[data-theme-toggle]');
 const themeLabel = document.querySelector('[data-theme-label]');
+const clockBtn = document.querySelector('[data-clock-toggle]');
+const clockLabel = document.querySelector('[data-clock-label]');
 
 function currentTheme() {
   const stored = localStorage.getItem('theme');
@@ -18,17 +20,11 @@ function applyTheme(mode) {
   if (themeLabel) themeLabel.textContent = mode;
 }
 
-function cycleTheme() {
-  const order = ['auto', 'light', 'dark'];
-  const next = order[(order.indexOf(currentTheme()) + 1) % order.length];
-  applyTheme(next);
-}
-
 applyTheme(currentTheme());
-themeBtn?.addEventListener('click', cycleTheme);
-
-const clockBtn = document.querySelector('[data-clock-toggle]');
-const clockLabel = document.querySelector('[data-clock-label]');
+themeBtn?.addEventListener('click', () => {
+  const order = ['auto', 'light', 'dark'];
+  applyTheme(order[(order.indexOf(currentTheme()) + 1) % order.length]);
+});
 
 function currentClockFormat() {
   return localStorage.getItem('clock-format') === '12h' ? '12h' : '24h';
@@ -40,12 +36,10 @@ function applyClockFormat(fmt) {
   refreshAllTimes();
 }
 
-function cycleClockFormat() {
-  applyClockFormat(currentClockFormat() === '24h' ? '12h' : '24h');
-}
-
 if (clockLabel) clockLabel.textContent = currentClockFormat();
-clockBtn?.addEventListener('click', cycleClockFormat);
+clockBtn?.addEventListener('click', () => {
+  applyClockFormat(currentClockFormat() === '24h' ? '12h' : '24h');
+});
 
 const is12h = () => currentClockFormat() === '12h';
 
@@ -59,154 +53,118 @@ Promise.allSettled([
   api('/check-cron-status'),
   api('/next-cron-fire'),
 ]).then(([records, cron, next]) => {
-  if (records.status === 'fulfilled') {
-    cachedRecords = records.value;
-    renderLog(cachedRecords);
-  }
-  if (cron.status === 'fulfilled') renderCronState(cron.value);
-  if (next.status === 'fulfilled') {
-    cachedNext = next.value;
-    startGauge(cachedNext);
-  }
+  if (records.status === 'fulfilled') cachedRecords = records.value;
+  if (next.status === 'fulfilled') cachedNext = next.value;
+
+  renderHeadline(cachedRecords, cron.status === 'fulfilled' ? cron.value : null);
+  renderNext(cachedNext);
+  renderLedger(cachedRecords);
 });
 
 function refreshAllTimes() {
-  if (cachedRecords) renderLog(cachedRecords);
-  if (cachedNext && cachedNext.nextFire) updateGaugeReadout();
+  if (cachedRecords) renderLedger(cachedRecords);
+  if (cachedNext) renderNext(cachedNext);
   tickClock();
 }
 
-function buildTicks() {
-  const g = document.querySelector('[data-gauge-ticks]');
-  if (!g) return;
-  const cx = 210;
-  const cy = 210;
-  const rOuter = 178;
-  const rInnerMinor = 168;
-  const rInnerMajor = 158;
-  const rLabel = 142;
-  const ticks = [];
+function renderHeadline(records, cron) {
+  const kicker = document.querySelector('[data-status-kicker]');
+  const headline = document.querySelector('[data-headline]');
+  const sub = document.querySelector('[data-subline]');
 
-  for (let i = 0; i < 60; i++) {
-    const angle = (i / 60) * Math.PI * 2 - Math.PI / 2;
-    const isMajor = i % 5 === 0;
-    const x1 = cx + Math.cos(angle) * rOuter;
-    const y1 = cy + Math.sin(angle) * rOuter;
-    const x2 = cx + Math.cos(angle) * (isMajor ? rInnerMajor : rInnerMinor);
-    const y2 = cy + Math.sin(angle) * (isMajor ? rInnerMajor : rInnerMinor);
-    ticks.push(
-      `<line class="${isMajor ? 'major' : ''}" x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}" stroke-width="${isMajor ? 1.5 : 1}" />`,
-    );
-  }
-
-  const labels = [
-    { hr: 0, label: '24' },
-    { hr: 6, label: '06' },
-    { hr: 12, label: '12' },
-    { hr: 18, label: '18' },
-  ];
-  for (const { hr, label } of labels) {
-    const angle = (hr / 24) * Math.PI * 2 - Math.PI / 2;
-    const x = cx + Math.cos(angle) * rLabel;
-    const y = cy + Math.sin(angle) * rLabel + 5;
-    ticks.push(
-      `<text x="${x.toFixed(2)}" y="${y.toFixed(2)}" text-anchor="middle">${label}</text>`,
-    );
-  }
-
-  g.innerHTML = ticks.join('');
-}
-buildTicks();
-
-let gaugeTickFn = null;
-
-function startGauge({ nextFire, mode }) {
-  const arcs = document.querySelectorAll('.gauge__progress');
-  const elapsed = document.querySelector('.gauge__elapsed');
-  const needle = document.querySelector('.gauge__needle');
-  const modeEl = document.querySelector('[data-mode-display]');
-  const etaEl = document.querySelector('[data-eta-display]');
-  const preciseEl = document.querySelector('[data-eta-precise]');
-  const windowEl = document.querySelector('[data-mode-window]');
-
-  if (!nextFire) {
-    if (modeEl) modeEl.textContent = '—';
-    if (etaEl) etaEl.textContent = 'no fire';
+  if (!records || records.length === 0) {
+    headline.innerHTML = `Awaiting first <em>fire</em>.`;
+    sub.textContent = 'no entries on record yet.';
     return;
   }
 
-  document.body.dataset.mode = mode;
-  modeEl.textContent = mode;
+  const recent = records.slice(0, 5);
+  const lastFailed = recent[0].status !== 'success';
+  const recentFailures = recent.filter((r) => r.status !== 'success').length;
 
-  const ONE_DAY = 24 * 60 * 60 * 1000;
-  const prev = nextFire - ONE_DAY;
+  if (recentFailures >= 3) {
+    kicker.classList.add('is-bad');
+    kicker.classList.remove('is-warn');
+    headline.innerHTML = `Things are <em>not okay</em>.`;
+    sub.textContent = `${recentFailures} of the last ${recent.length} attempts failed. take a look.`;
+    return;
+  }
 
-  function tick() {
-    const now = Date.now();
-    let t = (now - prev) / ONE_DAY;
-    t = Math.max(0, Math.min(1, t));
+  if (lastFailed) {
+    kicker.classList.add('is-warn');
+    kicker.classList.remove('is-bad');
+    headline.innerHTML = `Last fire <em>missed</em>.`;
+    sub.textContent = `the most recent attempt did not complete. cron is still scheduled.`;
+    return;
+  }
 
-    arcs.forEach((el) => el.setAttribute('stroke-dasharray', `${t} ${1 - t}`));
-    elapsed.setAttribute('stroke-dasharray', `${t} ${1 - t}`);
+  if (cron && cron.isAutomatedLogsActive === false) {
+    kicker.classList.add('is-warn');
+    headline.innerHTML = `Automation is <em>paused</em>.`;
+    sub.textContent = `recent fires were fine. cron is currently not running.`;
+    return;
+  }
 
-    const deg = t * 360;
-    needle.setAttribute('transform', `rotate(${deg.toFixed(2)})`);
+  kicker.classList.remove('is-warn', 'is-bad');
+  headline.innerHTML = `Everything <em>is running</em>.`;
+  const last = parseEntryDate(recent[0].dateTime);
+  if (last) {
+    sub.textContent = `last fire ${humanRelative(last)}, all green.`;
+  } else {
+    sub.textContent = `recent fires all green.`;
+  }
+}
 
-    const diff = nextFire - now;
-    etaEl.textContent = formatEta(diff);
-    preciseEl.textContent = formatPrecise(nextFire);
-    if (windowEl) {
-      windowEl.textContent = `window: ${formatManila(prev)} → ${formatManila(nextFire)}`;
+function renderNext(data) {
+  const whenEl = document.querySelector('[data-next-when]');
+  const whatEl = document.querySelector('[data-next-what]');
+  const hintEl = document.querySelector('[data-next-hint]');
+
+  if (!data || !data.nextFire) {
+    whenEl.textContent = 'unscheduled';
+    whatEl.textContent = '';
+    hintEl.textContent = '';
+    return;
+  }
+
+  const d = new Date(data.nextFire);
+  whenEl.textContent = formatNextWhen(d);
+  whatEl.textContent = data.mode === 'in' ? 'clock in' : 'clock out';
+
+  const diffMs = data.nextFire - Date.now();
+  hintEl.textContent = `${formatPreciseLocal(d)}, ${formatRelativeFuture(diffMs)} from now (plus a 1 to 30 minute random delay)`;
+}
+
+function formatNextWhen(d) {
+  const hour = d.toLocaleString('en-US', {
+    timeZone: 'Asia/Manila',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: is12h(),
+  });
+
+  const now = new Date();
+  const today = now.toLocaleString('en-US', { timeZone: 'Asia/Manila', day: 'numeric', month: 'numeric', year: 'numeric' });
+  const target = d.toLocaleString('en-US', { timeZone: 'Asia/Manila', day: 'numeric', month: 'numeric', year: 'numeric' });
+
+  let prefix;
+  if (today === target) {
+    prefix = '';
+  } else {
+    const tomorrow = new Date(now);
+    tomorrow.setDate(now.getDate() + 1);
+    const tomorrowStr = tomorrow.toLocaleString('en-US', { timeZone: 'Asia/Manila', day: 'numeric', month: 'numeric', year: 'numeric' });
+    if (target === tomorrowStr) {
+      prefix = 'tomorrow ';
+    } else {
+      prefix = d.toLocaleString('en-US', { timeZone: 'Asia/Manila', weekday: 'long' }).toLowerCase() + ' ';
     }
   }
 
-  gaugeTickFn = tick;
-  tick();
-  setInterval(tick, 1000);
-
-  setInterval(async () => {
-    try {
-      const fresh = await api('/next-cron-fire');
-      if (fresh.nextFire !== nextFire || fresh.mode !== mode) {
-        location.reload();
-      }
-    } catch {}
-  }, 5 * 60 * 1000);
+  return `${prefix}${hour.toLowerCase()}`;
 }
 
-function updateGaugeReadout() {
-  if (gaugeTickFn) gaugeTickFn();
-}
-
-function formatEta(ms) {
-  if (ms <= 0) return 'firing';
-  const sec = Math.floor(ms / 1000);
-  const hr = Math.floor(sec / 3600);
-  const min = Math.floor((sec % 3600) / 60);
-  const s = sec % 60;
-  if (hr > 0) return `${pad(hr)}h ${pad(min)}m`;
-  if (min > 0) return `${pad(min)}m ${pad(s)}s`;
-  return `${pad(s)}s`;
-}
-
-function pad(n) {
-  return String(n).padStart(2, '0');
-}
-
-function formatManila(utcMs) {
-  const d = new Date(utcMs);
-  return d
-    .toLocaleString('en-US', {
-      timeZone: 'Asia/Manila',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: is12h(),
-    })
-    .toLowerCase();
-}
-
-function formatPrecise(utcMs) {
-  const d = new Date(utcMs);
+function formatPreciseLocal(d) {
   return d
     .toLocaleString('en-US', {
       timeZone: 'Asia/Manila',
@@ -220,115 +178,151 @@ function formatPrecise(utcMs) {
     .toLowerCase();
 }
 
-function renderCronState(data) {
-  const stateEl = document.querySelector('[data-cron-state]');
-  const stateLed = document.querySelector('[data-cron-led]');
-  const sysLed = document.querySelector('[data-system-led]');
-  const sysState = document.querySelector('[data-system-state]');
-
-  const ok = !!data.isAutomatedLogsActive;
-
-  if (stateEl) stateEl.textContent = ok ? 'armed · running' : 'standby';
-  if (stateLed) stateLed.classList.toggle('led--ok', ok);
-
-  if (sysState) sysState.textContent = ok ? 'nominal' : 'standby';
-  if (sysLed) sysLed.classList.toggle('led--ok', ok);
+function formatRelativeFuture(ms) {
+  if (ms <= 0) return 'firing now';
+  const min = Math.round(ms / 60000);
+  if (min < 60) return `${min} min`;
+  const hr = Math.floor(min / 60);
+  const restMin = min % 60;
+  if (hr < 24) return restMin === 0 ? `${hr}h` : `${hr}h ${restMin}m`;
+  const day = Math.floor(hr / 24);
+  return `${day}d ${hr % 24}h`;
 }
 
-function renderLog(records) {
-  const list = document.querySelector('[data-ledger]');
-  const count = document.querySelector('[data-ledger-count]');
-  const lastTended = document.querySelector('[data-last-tended]');
-  if (!list) return;
-
-  if (!records || records.length === 0) {
-    list.innerHTML = `<li class="log__row log__row--placeholder">┄ no entries on record ┄</li>`;
-    if (count) count.textContent = '00';
-    return;
-  }
-
-  const rows = records.slice(0, 20).map((r, i) => {
-    const isFail = r.status !== 'success';
-    const isOut = r.type.startsWith('out');
-    const isSlack = r.type.includes('slack');
-
-    const time = formatLogTime(r.dateTime);
-    const channel = isSlack ? 'slack · relay' : 'sprout · primary';
-    const seq = String(records.length - i).padStart(3, '0');
-    const statusLed = isFail ? 'led--err' : 'led--ok';
-
-    return `
-      <li class="log__row ${isOut ? 'log__row--out' : 'log__row--in'} ${isFail ? 'log__row--failed' : ''}">
-        <span class="log__seq">#${seq}</span>
-        <span class="log__time tabular">${time}</span>
-        <span class="log__channel">${channel}</span>
-        <span class="log__action"></span>
-        <span class="log__status"><span class="led ${statusLed}"></span>${r.status}</span>
-      </li>
-    `;
-  });
-
-  list.innerHTML = rows.join('');
-
-  if (count) {
-    count.textContent = String(records.length).padStart(2, '0');
-  }
-  if (lastTended && records[0]) {
-    lastTended.textContent = relativeTime(records[0].dateTime);
-  }
-}
-
-function formatLogTime(raw) {
-  const d = parseLogDate(raw);
-  if (!d) return raw;
-  return d
-    .toLocaleString('en-US', {
-      timeZone: 'Asia/Manila',
-      month: 'short',
-      day: '2-digit',
-      hour: is12h() ? 'numeric' : '2-digit',
-      minute: '2-digit',
-      hour12: is12h(),
-    })
-    .toLowerCase()
-    .replace(',', '');
-}
-
-function parseLogDate(raw) {
-  if (!raw) return null;
-  const cleaned = raw.replace(' at ', ' ');
-  const d = new Date(cleaned);
-  if (isNaN(d.getTime())) return null;
-  return d;
-}
-
-function relativeTime(raw) {
-  const d = parseLogDate(raw);
-  if (!d) return '—';
+function humanRelative(d) {
   const diff = Date.now() - d.getTime();
   const min = Math.floor(diff / 60000);
   const hr = Math.floor(min / 60);
   const day = Math.floor(hr / 24);
-  if (min < 1) return 't−00:00';
-  if (min < 60) return `t−00:${pad(min)}`;
-  if (hr < 24) return `t−${pad(hr)}:${pad(min % 60)}`;
-  return `t−${day}d ${pad(hr % 24)}h`;
+  if (min < 1) return 'a moment ago';
+  if (min === 1) return 'a minute ago';
+  if (min < 60) return `${min} minutes ago`;
+  if (hr === 1) return 'an hour ago';
+  if (hr < 24) return `${hr} hours ago`;
+  if (day === 1) return 'yesterday';
+  if (day < 7) return `${day} days ago`;
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-function tickClock() {
-  const el = document.querySelector('[data-now]');
-  if (!el) return;
-  const d = new Date();
-  el.textContent = d
+function renderLedger(records) {
+  const list = document.querySelector('[data-ledger]');
+  const count = document.querySelector('[data-record-count]');
+  if (!list) return;
+
+  if (!records || records.length === 0) {
+    list.innerHTML = `<li class="record__placeholder">no fires recorded yet.</li>`;
+    if (count) count.textContent = '0';
+    return;
+  }
+
+  if (count) count.textContent = String(records.length);
+
+  const groups = groupByDay(records.slice(0, 30));
+
+  list.innerHTML = groups
+    .map(
+      ({ key, label, weekday, items }) => `
+        <li class="record__day">
+          <div class="record__day-label">${label}<small>${weekday}</small></div>
+          <div class="record__entries">
+            ${items.map(renderEntry).join('')}
+          </div>
+        </li>
+      `,
+    )
+    .join('');
+}
+
+function renderEntry(r) {
+  const isFail = r.status !== 'success';
+  const isOut = r.type.startsWith('out');
+  const isSlack = r.type.includes('slack');
+  const time = formatEntryTime(r.dateTime);
+  const verb = isOut ? 'clock out' : 'clock in';
+  const channel = isSlack ? 'slack relay' : 'sprout';
+
+  return `
+    <div class="entry ${isOut ? 'entry--out' : 'entry--in'} ${isFail ? 'entry--failed' : ''}">
+      <span class="entry__time">${time}</span>
+      <span class="entry__action">
+        <span class="entry__verb">${verb}</span>
+        <span class="entry__channel">${channel}</span>
+      </span>
+      <span class="entry__mark"></span>
+    </div>
+  `;
+}
+
+function groupByDay(records) {
+  const byKey = new Map();
+  for (const r of records) {
+    const d = parseEntryDate(r.dateTime);
+    if (!d) continue;
+    const key = d.toLocaleDateString('en-US', { timeZone: 'Asia/Manila', year: 'numeric', month: 'numeric', day: 'numeric' });
+    if (!byKey.has(key)) {
+      byKey.set(key, {
+        key,
+        label: d
+          .toLocaleDateString('en-US', { timeZone: 'Asia/Manila', month: 'long', day: 'numeric' })
+          .toLowerCase(),
+        weekday: d
+          .toLocaleDateString('en-US', { timeZone: 'Asia/Manila', weekday: 'long' })
+          .toLowerCase(),
+        items: [],
+      });
+    }
+    byKey.get(key).items.push(r);
+  }
+  return [...byKey.values()];
+}
+
+function parseEntryDate(raw) {
+  if (!raw) return null;
+  const cleaned = raw.replace(' at ', ' ');
+  const d = new Date(cleaned);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function formatEntryTime(raw) {
+  const d = parseEntryDate(raw);
+  if (!d) return raw;
+  return d
     .toLocaleString('en-US', {
       timeZone: 'Asia/Manila',
       hour: is12h() ? 'numeric' : '2-digit',
       minute: '2-digit',
-      second: '2-digit',
       hour12: is12h(),
     })
     .toLowerCase();
 }
 
+function tickClock() {
+  const now = document.querySelector('[data-now]');
+  const today = document.querySelector('[data-today]');
+  const d = new Date();
+
+  if (now) {
+    now.textContent = d
+      .toLocaleString('en-US', {
+        timeZone: 'Asia/Manila',
+        hour: is12h() ? 'numeric' : '2-digit',
+        minute: '2-digit',
+        hour12: is12h(),
+      })
+      .toLowerCase();
+  }
+
+  if (today) {
+    today.textContent = d
+      .toLocaleDateString('en-US', {
+        timeZone: 'Asia/Manila',
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+      })
+      .toLowerCase();
+  }
+}
+
 tickClock();
-setInterval(tickClock, 1000);
+setInterval(tickClock, 30000);
