@@ -3,16 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>lazyboi — still garden</title>
+    <title>lazyboi · console</title>
     <link rel="stylesheet" href="/css/sproutAutomation.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@300..900&family=Space+Grotesk:wght@300..700&display=swap"
       rel="stylesheet"
     />
     <script>
-      // Flash-prevent theme: apply before paint
       (function () {
         const stored = localStorage.getItem('theme');
         const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -22,178 +21,249 @@
     </script>
   </head>
   <body>
-    <main class="page">
-      <header class="masthead">
-        <div class="mark">
-          <span class="mark__dot" aria-hidden="true"></span>
-          <span class="mark__name">lazyboi</span>
-          <span class="mark__sep" aria-hidden="true">·</span>
-          <span class="mark__sub">still garden</span>
+    <main class="console">
+      <!-- ───────── HUD strip (status panel) ───────── -->
+      <header class="hud">
+        <div class="hud__cell hud__cell--brand">
+          <span class="hud__corner" aria-hidden="true">┌</span>
+          <span class="hud__brand">lazyboi</span>
+          <span class="hud__brand-sub">/console.v04</span>
         </div>
 
-        <button
-          class="theme-toggle"
-          type="button"
-          aria-label="Toggle theme"
-          data-theme-toggle
-        >
-          <span class="theme-toggle__label" data-theme-label>auto</span>
-        </button>
+        <div class="hud__cell">
+          <span class="hud__label">sys</span>
+          <span class="hud__value">
+            <span class="led" data-system-led></span>
+            <span data-system-state>checking</span>
+          </span>
+        </div>
+
+        <div class="hud__cell">
+          <span class="hud__label">tz</span>
+          <span class="hud__value">manila / utc+08</span>
+        </div>
+
+        <div class="hud__cell">
+          <span class="hud__label">clock</span>
+          <span class="hud__value tabular" data-now>—:—:—</span>
+        </div>
+
+        <div class="hud__cell hud__cell--theme">
+          <button
+            class="theme-toggle"
+            type="button"
+            aria-label="Cycle theme"
+            data-theme-toggle
+          >
+            <span class="theme-toggle__label" data-theme-label>auto</span>
+          </button>
+        </div>
       </header>
 
-      <section class="hero">
-        <p class="hero__kicker">
-          <span class="hero__kicker-dot" aria-hidden="true"></span>
-          <span data-cron-phrase>everything is calm.</span>
-        </p>
+      <!-- ───────── instrument cluster ───────── -->
+      <section class="cluster">
+        <article class="instrument" data-instrument>
+          <header class="instrument__head">
+            <span class="instrument__label">primary instrument · sched gauge</span>
+            <span class="instrument__id">i—01</span>
+          </header>
 
-        <h1 class="hero__headline">
-          The garden<br />
-          <em>tends</em> itself.
-        </h1>
+          <div class="instrument__face">
+            <svg
+              class="gauge"
+              viewBox="0 0 420 420"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <defs>
+                <radialGradient id="bezel" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="var(--bezel-inner)" />
+                  <stop offset="100%" stop-color="var(--bezel-outer)" />
+                </radialGradient>
+                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="3.5" />
+                </filter>
+              </defs>
 
-        <p class="hero__caption">
-          A quiet place where time is kept on your behalf.
-        </p>
-      </section>
+              <!-- outer bezel -->
+              <circle cx="210" cy="210" r="200" fill="url(#bezel)" />
+              <circle
+                cx="210"
+                cy="210"
+                r="200"
+                fill="none"
+                stroke="var(--bezel-rim)"
+                stroke-width="1"
+              />
+              <circle
+                cx="210"
+                cy="210"
+                r="186"
+                fill="none"
+                stroke="var(--bezel-inset)"
+                stroke-width="1"
+              />
 
-      <section class="stage" aria-label="Next scheduled event">
-        <figure class="dial">
-          <svg
-            class="dial__svg"
-            viewBox="0 0 400 240"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-          >
-            <defs>
-              <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="var(--arc-start)" />
-                <stop offset="100%" stop-color="var(--arc-end)" />
-              </linearGradient>
-              <radialGradient id="pebbleGlow" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="var(--pebble-glow)" stop-opacity="0.6" />
-                <stop offset="100%" stop-color="var(--pebble-glow)" stop-opacity="0" />
-              </radialGradient>
-              <filter id="soften" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="0.4" />
-              </filter>
-            </defs>
+              <!-- ticks -->
+              <g class="gauge__ticks" data-gauge-ticks></g>
 
-            <!-- ground line -->
-            <line
-              x1="20"
-              y1="220"
-              x2="380"
-              y2="220"
-              stroke="var(--hairline)"
-              stroke-width="1"
-              stroke-dasharray="2 6"
-            />
+              <!-- elapsed arc (faint) -->
+              <circle
+                class="gauge__elapsed"
+                cx="210"
+                cy="210"
+                r="160"
+                fill="none"
+                stroke="var(--gauge-elapsed)"
+                stroke-width="2"
+                stroke-linecap="butt"
+                pathLength="1"
+                stroke-dasharray="0 1"
+                transform="rotate(-90 210 210)"
+              />
 
-            <!-- ghost arc (full path) -->
-            <path
-              class="dial__track"
-              d="M 40 220 A 160 160 0 0 1 360 220"
-              fill="none"
-              stroke="var(--track)"
-              stroke-width="1.5"
-              stroke-linecap="round"
-            />
+              <!-- progress arc (phosphor) -->
+              <circle
+                class="gauge__progress"
+                cx="210"
+                cy="210"
+                r="160"
+                fill="none"
+                stroke="var(--phosphor)"
+                stroke-width="2.5"
+                stroke-linecap="butt"
+                pathLength="1"
+                stroke-dasharray="0 1"
+                transform="rotate(-90 210 210)"
+                filter="url(#glow)"
+              />
+              <circle
+                class="gauge__progress"
+                cx="210"
+                cy="210"
+                r="160"
+                fill="none"
+                stroke="var(--phosphor)"
+                stroke-width="1.5"
+                stroke-linecap="butt"
+                pathLength="1"
+                stroke-dasharray="0 1"
+                transform="rotate(-90 210 210)"
+              />
 
-            <!-- progress arc -->
-            <path
-              class="dial__arc"
-              d="M 40 220 A 160 160 0 0 1 360 220"
-              fill="none"
-              stroke="url(#arcGrad)"
-              stroke-width="2.5"
-              stroke-linecap="round"
-              pathLength="1"
-              stroke-dasharray="1"
-              stroke-dashoffset="1"
-              filter="url(#soften)"
-            />
+              <!-- needle -->
+              <line
+                class="gauge__needle"
+                x1="210"
+                y1="210"
+                x2="210"
+                y2="58"
+                stroke="var(--phosphor)"
+                stroke-width="2"
+                stroke-linecap="round"
+                transform-origin="210 210"
+                transform="rotate(0)"
+              />
+              <circle cx="210" cy="210" r="6" fill="var(--phosphor)" />
+              <circle cx="210" cy="210" r="2.5" fill="var(--bezel-inner)" />
+            </svg>
 
-            <!-- start marker -->
-            <circle cx="40" cy="220" r="3" fill="var(--tick)" />
-            <!-- end marker -->
-            <circle cx="360" cy="220" r="3" fill="var(--tick)" />
-
-            <!-- pebble glow -->
-            <circle
-              class="dial__pebble-glow"
-              cx="40"
-              cy="220"
-              r="24"
-              fill="url(#pebbleGlow)"
-            />
-            <!-- pebble -->
-            <circle
-              class="dial__pebble"
-              cx="40"
-              cy="220"
-              r="7"
-              fill="var(--pebble)"
-            />
-            <circle
-              class="dial__pebble-inner"
-              cx="40"
-              cy="220"
-              r="2.5"
-              fill="var(--pebble-inner)"
-            />
-          </svg>
-
-          <figcaption class="dial__caption">
-            <span class="dial__label" data-dial-label>next</span>
-            <span class="dial__phrase" data-dial-phrase>listening…</span>
-            <span class="dial__precise" data-dial-precise>—</span>
-          </figcaption>
-        </figure>
-
-        <aside class="facts">
-          <dl class="facts__list">
-            <div class="facts__row">
-              <dt>automation</dt>
-              <dd data-cron-state>checking…</dd>
+            <div class="instrument__readout">
+              <span class="readout__label">mode</span>
+              <span class="readout__mode" data-mode-display>—</span>
+              <span class="readout__label">eta</span>
+              <span class="readout__eta tabular" data-eta-display>—h —m</span>
+              <span class="readout__sub" data-eta-precise>—</span>
             </div>
-            <div class="facts__row">
-              <dt>window</dt>
-              <dd>
-                <span class="pill pill--in">in</span> 21:00 · mon–fri<br />
-                <span class="pill pill--out">out</span> 06:00 · tue–sat
-              </dd>
+          </div>
+
+          <footer class="instrument__foot">
+            <span data-mode-window>window: —</span>
+            <span class="instrument__pulse"></span>
+          </footer>
+        </article>
+
+        <!-- ───────── telemetry stack ───────── -->
+        <aside class="telemetry">
+          <header class="telemetry__head">
+            <span class="telemetry__label">telemetry</span>
+            <span class="telemetry__id">t—01</span>
+          </header>
+
+          <div class="telemetry__grid">
+            <div class="cell">
+              <span class="cell__label">automation</span>
+              <span class="cell__value">
+                <span class="led led--lg" data-cron-led></span>
+                <span data-cron-state>—</span>
+              </span>
             </div>
-            <div class="facts__row">
-              <dt>drift</dt>
-              <dd>+ up to 30 min · random</dd>
+
+            <div class="cell">
+              <span class="cell__label">drift window</span>
+              <span class="cell__value">+ 00 → 30 min</span>
+              <span class="cell__sub">randomized · per fire</span>
             </div>
-            <div class="facts__row">
-              <dt>last tended</dt>
-              <dd data-last-tended>—</dd>
+
+            <div class="cell">
+              <span class="cell__label">clock-in window</span>
+              <span class="cell__value tabular">21:00</span>
+              <span class="cell__sub">mon · tue · wed · thu · fri</span>
             </div>
-          </dl>
+
+            <div class="cell">
+              <span class="cell__label">clock-out window</span>
+              <span class="cell__value tabular">06:00</span>
+              <span class="cell__sub">tue · wed · thu · fri · sat</span>
+            </div>
+
+            <div class="cell">
+              <span class="cell__label">last fire</span>
+              <span class="cell__value" data-last-tended>—</span>
+            </div>
+
+            <div class="cell">
+              <span class="cell__label">total entries</span>
+              <span class="cell__value tabular" data-ledger-count>—</span>
+            </div>
+          </div>
         </aside>
       </section>
 
-      <section class="ledger" aria-label="Recent entries">
-        <header class="ledger__head">
-          <h2 class="ledger__title">Recent entries</h2>
-          <span class="ledger__meta" data-ledger-count></span>
+      <!-- ───────── mission log ───────── -->
+      <section class="log">
+        <header class="log__head">
+          <span class="log__label">mission log · last 20</span>
+          <span class="log__id">l—01</span>
         </header>
 
-        <ol class="ledger__list" data-ledger>
-          <li class="ledger__placeholder">
-            <span class="shimmer"></span>
-            <span class="shimmer"></span>
-            <span class="shimmer"></span>
+        <div class="log__legend">
+          <span><span class="led led--ok"></span>nominal</span>
+          <span><span class="led led--err"></span>fault</span>
+          <span class="log__legend-rule"></span>
+          <span>↓ newest first</span>
+        </div>
+
+        <ol class="log__list" data-ledger>
+          <li class="log__row log__row--placeholder">
+            <span>┄ awaiting telemetry ┄</span>
           </li>
         </ol>
       </section>
 
-      <footer class="foot">
-        <span>tended by a small dragon.</span>
-        <span data-now></span>
+      <footer class="bottom">
+        <span class="bottom__cell">
+          <span class="bottom__label">node</span>
+          <span class="bottom__val">vps · 194.233.79.158</span>
+        </span>
+        <span class="bottom__cell">
+          <span class="bottom__label">runtime</span>
+          <span class="bottom__val">node · pm2 · puppeteer</span>
+        </span>
+        <span class="bottom__cell">
+          <span class="bottom__label">build</span>
+          <span class="bottom__val">v0.0.4 · beta</span>
+        </span>
       </footer>
     </main>
 

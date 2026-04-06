@@ -1,11 +1,9 @@
 /* ─────────────────────────────────────────────
-   lazyboi · still garden
-   soft/organic dashboard — ambient + honest
+   lazyboi · console
+   warm phosphor cockpit instrument cluster
    ───────────────────────────────────────────── */
 
-const MANILA_OFFSET_MS = 8 * 60 * 60 * 1000;
-
-// ─── theme toggle ──────────────────────────
+// ─── theme cycle (auto → light → dark) ────
 const themeBtn = document.querySelector('[data-theme-toggle]');
 const themeLabel = document.querySelector('[data-theme-label]');
 
@@ -43,98 +41,107 @@ Promise.allSettled([
   api('/check-cron-status'),
   api('/next-cron-fire'),
 ]).then(([records, cron, next]) => {
-  if (records.status === 'fulfilled') renderLedger(records.value);
+  if (records.status === 'fulfilled') renderLog(records.value);
   if (cron.status === 'fulfilled') renderCronState(cron.value);
-  if (next.status === 'fulfilled') {
-    startDial(next.value);
-    renderHeroPhrase(next.value);
-  }
+  if (next.status === 'fulfilled') startGauge(next.value);
 });
 
-// ─── hero phrase (gentle, not anxious) ────
-function renderHeroPhrase({ nextFire, mode }) {
-  const el = document.querySelector('[data-cron-phrase]');
-  if (!el || !nextFire) return;
+// ─── gauge: ticks ──────────────────────────
+function buildTicks() {
+  const g = document.querySelector('[data-gauge-ticks]');
+  if (!g) return;
+  const cx = 210;
+  const cy = 210;
+  const rOuter = 178;
+  const rInnerMinor = 168;
+  const rInnerMajor = 158;
+  const rLabel = 142;
+  const ticks = [];
 
-  const diffMin = (nextFire - Date.now()) / 60000;
-  let phrase;
-  if (diffMin < 2) phrase = 'a breath is about to be taken.';
-  else if (diffMin < 60) phrase = 'something stirs soon.';
-  else if (diffMin < 60 * 6) phrase = 'a quiet afternoon ahead.';
-  else phrase = 'everything is calm.';
-
-  el.textContent = phrase;
-}
-
-// ─── dial widget ───────────────────────────
-const PATH_LEN = 1; // using pathLength="1" so we can use 0..1
-const ARC_POINTS = computeArcPoints();
-
-function computeArcPoints() {
-  // Sample points along M 40 220 A 160 160 0 0 1 360 220 (semicircle)
-  // Center: (200, 220), radius: 160. Angle goes from 180° → 0°.
-  const pts = [];
-  const steps = 200;
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps;
-    const angle = Math.PI - t * Math.PI; // π → 0
-    pts.push({
-      x: 200 + 160 * Math.cos(angle),
-      y: 220 - 160 * Math.sin(angle),
-      t,
-    });
+  for (let i = 0; i < 60; i++) {
+    const angle = (i / 60) * Math.PI * 2 - Math.PI / 2;
+    const isMajor = i % 5 === 0;
+    const x1 = cx + Math.cos(angle) * rOuter;
+    const y1 = cy + Math.sin(angle) * rOuter;
+    const x2 = cx + Math.cos(angle) * (isMajor ? rInnerMajor : rInnerMinor);
+    const y2 = cy + Math.sin(angle) * (isMajor ? rInnerMajor : rInnerMinor);
+    ticks.push(
+      `<line class="${isMajor ? 'major' : ''}" x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}" stroke-width="${isMajor ? 1.5 : 1}" />`,
+    );
   }
-  return pts;
-}
 
-function startDial({ nextFire, mode }) {
-  const arc = document.querySelector('.dial__arc');
-  const pebble = document.querySelector('.dial__pebble');
-  const pebbleInner = document.querySelector('.dial__pebble-inner');
-  const pebbleGlow = document.querySelector('.dial__pebble-glow');
-  const labelEl = document.querySelector('[data-dial-label]');
-  const phraseEl = document.querySelector('[data-dial-phrase]');
-  const preciseEl = document.querySelector('[data-dial-precise]');
+  // Hour labels at 12 / 3 / 6 / 9 (0, 6, 12, 18 in our 24h gauge)
+  const labels = [
+    { hr: 0, label: '24' },
+    { hr: 6, label: '06' },
+    { hr: 12, label: '12' },
+    { hr: 18, label: '18' },
+  ];
+  for (const { hr, label } of labels) {
+    const angle = (hr / 24) * Math.PI * 2 - Math.PI / 2;
+    const x = cx + Math.cos(angle) * rLabel;
+    const y = cy + Math.sin(angle) * rLabel + 5;
+    ticks.push(
+      `<text x="${x.toFixed(2)}" y="${y.toFixed(2)}" text-anchor="middle">${label}</text>`,
+    );
+  }
+
+  g.innerHTML = ticks.join('');
+}
+buildTicks();
+
+// ─── gauge: live needle + arcs ─────────────
+function startGauge({ nextFire, mode }) {
+  const arc = document.querySelector('.gauge__progress');
+  const arcs = document.querySelectorAll('.gauge__progress');
+  const elapsed = document.querySelector('.gauge__elapsed');
+  const needle = document.querySelector('.gauge__needle');
+  const modeEl = document.querySelector('[data-mode-display]');
+  const etaEl = document.querySelector('[data-eta-display]');
+  const preciseEl = document.querySelector('[data-eta-precise]');
+  const windowEl = document.querySelector('[data-mode-window]');
 
   if (!nextFire) {
-    phraseEl.textContent = 'no schedule.';
-    preciseEl.textContent = '—';
+    if (modeEl) modeEl.textContent = '—';
+    if (etaEl) etaEl.textContent = 'no fire';
     return;
   }
 
-  // Set mode on body so the dial colors shift
   document.body.dataset.mode = mode;
+  modeEl.textContent = mode;
 
-  // Anchor the arc to "one full window" — from the previous cron fire to the next
-  const prev = previousCronFire(nextFire, mode);
-  const total = nextFire - prev;
+  const ONE_DAY = 24 * 60 * 60 * 1000;
+  const prev = nextFire - ONE_DAY;
 
-  labelEl.textContent = `next · ${mode}`;
+  if (windowEl) {
+    windowEl.textContent = `window: ${formatManila(prev)} → ${formatManila(nextFire)}`;
+  }
 
   function tick() {
     const now = Date.now();
-    let t = (now - prev) / total;
+    let t = (now - prev) / ONE_DAY;
     t = Math.max(0, Math.min(1, t));
 
-    // Draw progress arc (0..1 of pathLength=1)
-    arc.setAttribute('stroke-dashoffset', String(1 - t));
+    // Progress arc — fills clockwise from 12 o'clock
+    arcs.forEach((el) => el.setAttribute('stroke-dasharray', `${t} ${1 - t}`));
 
-    // Position pebble along the semicircle
-    const pt = sampleArc(t);
-    [pebble, pebbleInner, pebbleGlow].forEach((el) => {
-      el.setAttribute('cx', pt.x.toFixed(2));
-      el.setAttribute('cy', pt.y.toFixed(2));
-    });
+    // Elapsed (faint) draws the same range slightly behind for depth
+    elapsed.setAttribute('stroke-dasharray', `${t} ${1 - t}`);
 
-    // Natural language for the caption
-    phraseEl.textContent = naturalPhrase(nextFire - now);
-    preciseEl.textContent = formatPreciseTarget(nextFire);
+    // Needle: 0..1 → 0..360°
+    const deg = t * 360;
+    needle.setAttribute('transform', `rotate(${deg.toFixed(2)})`);
+
+    // ETA readout
+    const diff = nextFire - now;
+    etaEl.textContent = formatEta(diff);
+    preciseEl.textContent = formatPrecise(nextFire);
   }
 
   tick();
   setInterval(tick, 1000);
 
-  // Re-sync with backend every 5 minutes
+  // Re-sync every 5 minutes
   setInterval(async () => {
     try {
       const fresh = await api('/next-cron-fire');
@@ -145,105 +152,92 @@ function startDial({ nextFire, mode }) {
   }, 5 * 60 * 1000);
 }
 
-function sampleArc(t) {
-  const idx = Math.round(t * (ARC_POINTS.length - 1));
-  return ARC_POINTS[idx];
-}
-
-function previousCronFire(nextFireUtc, mode) {
-  // Previous fire is the same mode, 24h earlier, unless weekend skips apply.
-  // For our purposes, use 24h prior — the visual anchor doesn't need to match
-  // the exact scheduled previous fire; it just needs to give the pebble a
-  // meaningful trajectory from "last event" to "next event".
-  const ONE_DAY = 24 * 60 * 60 * 1000;
-  return nextFireUtc - ONE_DAY;
-}
-
-function naturalPhrase(ms) {
-  if (ms <= 0) return 'tending now…';
+function formatEta(ms) {
+  if (ms <= 0) return 'firing';
   const sec = Math.floor(ms / 1000);
-  const min = Math.floor(sec / 60);
-  const hr = Math.floor(min / 60);
-  const day = Math.floor(hr / 24);
-
-  if (sec < 60) return `in ${sec} seconds.`;
-  if (min === 1) return 'in about a minute.';
-  if (min < 10) return `in about ${min} minutes.`;
-  if (min < 60) {
-    const rounded = Math.round(min / 5) * 5;
-    return `in about ${rounded} minutes.`;
-  }
-  if (hr < 2) {
-    const leftover = min - 60;
-    if (leftover < 5) return 'in about an hour.';
-    return `in about an hour and ${Math.round(leftover / 5) * 5}.`;
-  }
-  if (hr < 12) return `in about ${hr} hours.`;
-  if (day < 1) return `later today.`;
-  if (day === 1) return 'tomorrow morning.';
-  return `in ${day} days.`;
+  const hr = Math.floor(sec / 3600);
+  const min = Math.floor((sec % 3600) / 60);
+  const s = sec % 60;
+  if (hr > 0) return `${pad(hr)}h ${pad(min)}m`;
+  if (min > 0) return `${pad(min)}m ${pad(s)}s`;
+  return `${pad(s)}s`;
 }
 
-function formatPreciseTarget(utcMs) {
+function pad(n) {
+  return String(n).padStart(2, '0');
+}
+
+function formatManila(utcMs) {
   const d = new Date(utcMs);
-  const opts = {
+  return d.toLocaleString('en-US', {
     timeZone: 'Asia/Manila',
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
     hour: 'numeric',
     minute: '2-digit',
-    hour12: true,
-  };
-  return `· ${d.toLocaleString('en-US', opts)} · manila`;
+    hour12: false,
+  });
 }
 
-// ─── facts / cron state ────────────────────
+function formatPrecise(utcMs) {
+  const d = new Date(utcMs);
+  return d
+    .toLocaleString('en-US', {
+      timeZone: 'Asia/Manila',
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    })
+    .toLowerCase();
+}
+
+// ─── telemetry: cron state ─────────────────
 function renderCronState(data) {
-  const el = document.querySelector('[data-cron-state]');
-  if (!el) return;
-  el.textContent = data.isAutomatedLogsActive
-    ? 'running · quietly'
-    : 'paused';
+  const stateEl = document.querySelector('[data-cron-state]');
+  const stateLed = document.querySelector('[data-cron-led]');
+  const sysLed = document.querySelector('[data-system-led]');
+  const sysState = document.querySelector('[data-system-state]');
+
+  const ok = !!data.isAutomatedLogsActive;
+
+  if (stateEl) stateEl.textContent = ok ? 'armed · running' : 'standby';
+  if (stateLed) stateLed.classList.toggle('led--ok', ok);
+
+  if (sysState) sysState.textContent = ok ? 'nominal' : 'standby';
+  if (sysLed) sysLed.classList.toggle('led--ok', ok);
 }
 
-// ─── ledger ────────────────────────────────
-function renderLedger(records) {
+// ─── mission log ───────────────────────────
+function renderLog(records) {
   const list = document.querySelector('[data-ledger]');
   const count = document.querySelector('[data-ledger-count]');
   const lastTended = document.querySelector('[data-last-tended]');
   if (!list) return;
 
   if (!records || records.length === 0) {
-    list.innerHTML = `<li class="ledger__row"><span class="ledger__dot"></span><span class="ledger__time">—</span><span class="ledger__verb"><em>the garden is untouched.</em></span><span class="ledger__status">empty</span></li>`;
-    if (count) count.textContent = '0 entries';
+    list.innerHTML = `<li class="log__row log__row--placeholder">┄ no entries on record ┄</li>`;
+    if (count) count.textContent = '00';
     return;
   }
 
-  const rows = records.slice(0, 20).map((r) => {
+  const rows = records.slice(0, 20).map((r, i) => {
     const isFail = r.status !== 'success';
     const isOut = r.type.startsWith('out');
     const isSlack = r.type.includes('slack');
 
-    let verb;
-    if (isOut) {
-      verb = isSlack
-        ? `whispered <strong>out</strong> on slack.`
-        : `clocked <strong>out</strong>.`;
-    } else {
-      verb = isSlack
-        ? `whispered <strong>in</strong> on slack.`
-        : `clocked <strong>in</strong>.`;
-    }
-
-    const time = formatLedgerTime(r.dateTime);
+    const time = formatLogTime(r.dateTime);
+    const channel = isSlack ? 'slack · relay' : 'sprout · primary';
+    const seq = String(records.length - i).padStart(3, '0');
+    const statusLed = isFail ? 'led--err' : 'led--ok';
 
     return `
-      <li class="ledger__row ${isOut ? 'ledger__row--out' : 'ledger__row--in'} ${isFail ? 'ledger__row--failed' : ''}">
-        <span class="ledger__dot"></span>
-        <span class="ledger__time">${time}</span>
-        <span class="ledger__verb">${verb}</span>
-        <span class="ledger__status">${r.status}</span>
+      <li class="log__row ${isOut ? 'log__row--out' : 'log__row--in'} ${isFail ? 'log__row--failed' : ''}">
+        <span class="log__seq">#${seq}</span>
+        <span class="log__time tabular">${time}</span>
+        <span class="log__channel">${channel}</span>
+        <span class="log__action"></span>
+        <span class="log__status"><span class="led ${statusLed}"></span>${r.status}</span>
       </li>
     `;
   });
@@ -251,31 +245,31 @@ function renderLedger(records) {
   list.innerHTML = rows.join('');
 
   if (count) {
-    count.textContent = `${records.length} ${records.length === 1 ? 'entry' : 'entries'}`;
+    count.textContent = String(records.length).padStart(2, '0');
   }
-
   if (lastTended && records[0]) {
     lastTended.textContent = relativeTime(records[0].dateTime);
   }
 }
 
-function formatLedgerTime(raw) {
-  // Input like: "April 4, 2026 at 6:03:04 AM"
-  const d = parseLedgerDate(raw);
+function formatLogTime(raw) {
+  const d = parseLogDate(raw);
   if (!d) return raw;
-  const opts = {
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  };
-  return d.toLocaleString('en-US', opts).replace(',', ' ·');
+  return d
+    .toLocaleString('en-US', {
+      timeZone: 'Asia/Manila',
+      month: 'short',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    })
+    .toLowerCase()
+    .replace(',', '');
 }
 
-function parseLedgerDate(raw) {
+function parseLogDate(raw) {
   if (!raw) return null;
-  // "April 4, 2026 at 6:03:04 AM" → parseable after removing " at "
   const cleaned = raw.replace(' at ', ' ');
   const d = new Date(cleaned);
   if (isNaN(d.getTime())) return null;
@@ -283,31 +277,33 @@ function parseLedgerDate(raw) {
 }
 
 function relativeTime(raw) {
-  const d = parseLedgerDate(raw);
+  const d = parseLogDate(raw);
   if (!d) return '—';
   const diff = Date.now() - d.getTime();
   const min = Math.floor(diff / 60000);
   const hr = Math.floor(min / 60);
   const day = Math.floor(hr / 24);
-  if (min < 1) return 'just now';
-  if (min < 60) return `${min}m ago`;
-  if (hr < 24) return `${hr}h ago`;
-  if (day === 1) return 'yesterday';
-  return `${day}d ago`;
+  if (min < 1) return 't−00:00';
+  if (min < 60) return `t−00:${pad(min)}`;
+  if (hr < 24) return `t−${pad(hr)}:${pad(min % 60)}`;
+  return `t−${day}d ${pad(hr % 24)}h`;
 }
 
-// ─── live footer clock ─────────────────────
-function tickNow() {
+// ─── live HUD clock ────────────────────────
+function tickClock() {
   const el = document.querySelector('[data-now]');
   if (!el) return;
   const d = new Date();
-  el.textContent = d.toLocaleTimeString('en-US', {
-    timeZone: 'Asia/Manila',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  }) + ' · manila';
+  el.textContent = d
+    .toLocaleString('en-US', {
+      timeZone: 'Asia/Manila',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    })
+    .toLowerCase();
 }
 
-tickNow();
-setInterval(tickNow, 1000);
+tickClock();
+setInterval(tickClock, 1000);
