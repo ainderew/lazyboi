@@ -99,7 +99,7 @@ class SlackService {
 
       const redirectUrl = page.url();
       logger.info(`[slack] After workspace redirect — URL: ${redirectUrl}`);
-      const teamIdMatch = redirectUrl.match(/\/client\/([A-Z0-9]+)\//);
+      const teamIdMatch = redirectUrl.match(/\/client\/([A-Z0-9]+)/);
       const teamId = teamIdMatch ? teamIdMatch[1] : null;
 
       if (!teamId) {
