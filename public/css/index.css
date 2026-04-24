@@ -476,7 +476,7 @@ h1, h2, p, dl, dd { margin: 0; }
   background: linear-gradient(180deg, color-mix(in oklch, var(--bad), transparent 70%), color-mix(in oklch, var(--bad), transparent 45%));
   border-color: color-mix(in oklch, var(--bad), var(--line) 30%);
 }
-.spark__cell[data-state='weekend'] {
+.spark__cell[data-state='off'] {
   background: linear-gradient(180deg, color-mix(in oklch, var(--warn), transparent 80%), color-mix(in oklch, var(--warn), transparent 65%));
   border-color: color-mix(in oklch, var(--warn), var(--line) 40%);
 }

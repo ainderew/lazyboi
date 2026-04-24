@@ -141,17 +141,17 @@ function renderCard(mode) {
     nextEl.textContent = '—';
   }
 
-  renderSpark(card.querySelector('[data-spark]'), entries);
+  renderSpark(card.querySelector('[data-spark]'), entries, mode);
 }
 
-function renderSpark(container, entries) {
+function renderSpark(container, entries, mode) {
   if (!container) return;
   const days = [];
   const now = new Date();
   for (let i = 13; i >= 0; i--) {
     const d = new Date(now);
     d.setDate(now.getDate() - i);
-    days.push({ key: dayKey(d), label: dayLabel(d), state: isWeekend(d) ? 'weekend' : 'miss' });
+    days.push({ key: dayKey(d), label: dayLabel(d), state: isOffDay(d, mode) ? 'off' : 'miss' });
   }
   for (const e of entries) {
     const d = parseEntryDate(e.dateTime);
@@ -176,8 +176,10 @@ function dayLabel(d) {
   return `${md} (${wd})`;
 }
 
-function isWeekend(d) {
+function isOffDay(d, mode) {
   const wd = d.toLocaleDateString('en-US', { timeZone: 'Asia/Manila', weekday: 'short' });
+  // Night-shift schedule: clock in Mon–Fri nights, clock out Tue–Sat mornings.
+  if (mode === 'out') return wd === 'Sun' || wd === 'Mon';
   return wd === 'Sat' || wd === 'Sun';
 }
 
