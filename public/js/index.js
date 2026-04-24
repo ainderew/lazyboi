@@ -151,7 +151,7 @@ function renderSpark(container, entries) {
   for (let i = 13; i >= 0; i--) {
     const d = new Date(now);
     d.setDate(now.getDate() - i);
-    days.push({ key: dayKey(d), state: 'miss' });
+    days.push({ key: dayKey(d), state: isWeekend(d) ? 'weekend' : 'miss' });
   }
   for (const e of entries) {
     const d = parseEntryDate(e.dateTime);
@@ -168,6 +168,11 @@ function renderSpark(container, entries) {
 
 function dayKey(d) {
   return d.toLocaleDateString('en-US', { timeZone: 'Asia/Manila', year: 'numeric', month: '2-digit', day: '2-digit' });
+}
+
+function isWeekend(d) {
+  const wd = d.toLocaleDateString('en-US', { timeZone: 'Asia/Manila', weekday: 'short' });
+  return wd === 'Sat' || wd === 'Sun';
 }
 
 function renderRecent() {
