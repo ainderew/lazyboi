@@ -440,6 +440,32 @@ h1, h2, p, dl, dd { margin: 0; }
   border: 1px solid var(--line);
   transition: 300ms var(--ease);
   transform-origin: bottom;
+  position: relative;
+}
+
+.spark__cell::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(2px);
+  white-space: nowrap;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  padding: 4px 8px;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms var(--ease), transform 150ms var(--ease);
+  z-index: 2;
+}
+
+.spark__cell:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 .spark__cell[data-state='ok'] {

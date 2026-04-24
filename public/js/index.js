@@ -151,7 +151,7 @@ function renderSpark(container, entries) {
   for (let i = 13; i >= 0; i--) {
     const d = new Date(now);
     d.setDate(now.getDate() - i);
-    days.push({ key: dayKey(d), state: isWeekend(d) ? 'weekend' : 'miss' });
+    days.push({ key: dayKey(d), label: dayLabel(d), state: isWeekend(d) ? 'weekend' : 'miss' });
   }
   for (const e of entries) {
     const d = parseEntryDate(e.dateTime);
@@ -162,12 +162,18 @@ function renderSpark(container, entries) {
     else if (slot.state !== 'ok') slot.state = 'bad';
   }
   container.innerHTML = days
-    .map((d) => `<div class="spark__cell" data-state="${d.state}"></div>`)
+    .map((d) => `<div class="spark__cell" data-state="${d.state}" data-label="${d.label}"></div>`)
     .join('');
 }
 
 function dayKey(d) {
   return d.toLocaleDateString('en-US', { timeZone: 'Asia/Manila', year: 'numeric', month: '2-digit', day: '2-digit' });
+}
+
+function dayLabel(d) {
+  const md = d.toLocaleDateString('en-US', { timeZone: 'Asia/Manila', month: 'long', day: 'numeric' });
+  const wd = d.toLocaleDateString('en-US', { timeZone: 'Asia/Manila', weekday: 'long' });
+  return `${md} (${wd})`;
 }
 
 function isWeekend(d) {
